@@ -18,17 +18,18 @@
     "baseUrl": ".",
     "typeRoots": ["node_modules/@types", "src/typings"],
     "paths": {
-      "@components/*": ["components/*"],
-      "@styles/*": ["styles/*"],
-      "@theme/*": ["styles/theme/*"],
+      "@components/*": ["src/components/*"],
+      "@styles/*": ["src/styles/*"],
+      "@theme/*": ["src/styles/theme/*"],
       "@public/*": ["public/*"],
-      "@pages/*": ["pages/*"],
-      "@utils/*": ["utilities/*"],
-      "@hooks/*": ["hooks/*"],
-      "@contexts/*": ["contexts/*"],
-      "@utilities/*": ["utilities/*"]
+      "@pages/*": ["src/pages/*"],
+      "@utils/*": ["src/lib/utilities/*"],
+      "@hooks/*": ["src/hooks/*"],
+      "@contexts/*": ["src/contexts/*"],
+      "@utilities/*": ["src/lib/utilities/*"],
+      "@lib/*": ["src/lib/*"]
     }
   },
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", "additional.d.ts", "components/forms/InputSlider.tsx.bak", "pages/users/[id].tsx.bak"], 
+  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", "additional.d.ts"],
   "exclude": ["node_modules"]
 }
