@@ -6,7 +6,6 @@ import {
   Container,
   Typography,
   Box,
-  useScrollTrigger,
   CircularProgress
 } from "@mui/material";
 import { useTheme } from "@mui/material/styles";
@@ -81,21 +80,29 @@ const Open: NextPage = () => {
 
   const rand = useMemo(() => randomInteger(1, 18), [1, 18]);
 
-  const trigger = useScrollTrigger({
-    disableHysteresis: true,
-    threshold: 0,
-  });
-
   return (
     <>
       {walletAddress !== '' && nftList && (
         <Box
           sx={{
             position: 'fixed',
-            top: trigger ? "60px" : "90px",
-            transition: 'top 200ms linear',
+            top: 0,
             background: theme.palette.mode == 'dark' ? "rgba(15,21,32,0.9)" : "rgba(235,235,235,0.9)",
-            borderBottom: theme.palette.mode == 'dark' ? "1px solid #1d242f" : "1px solid rgba(140,140,140,0.2)",
+            '&:before': {
+              pointerEvents: 'none',
+              inset: 0,
+              background: 'linear-gradient(to right,#a99151 22%,#877036 24%,#ffffcf 26%,#d0b46c 27%,#f2d68d 40%,#a49053 78%)',
+              paddingBottom: '2px',
+              content: '""',
+              position: 'absolute',
+              top: 0,
+              left: 0,
+              boxSizing: 'border-box',
+              WebkitMask: 'linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)',
+              mask: 'linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)',
+              WebkitMaskComposite: 'xor',
+              maskComposite: 'exclude',
+            },
             backdropFilter: "blur(25px)",
             zIndex: 100,
             width: '100%',

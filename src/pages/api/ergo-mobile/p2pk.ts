@@ -9,6 +9,10 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     return res.status(400).json({ error: 'Missing verification ID or Address' });
   }
 
+  if (p2pkAddress.includes('multiple')) {
+    return res.status(400).json({ error: 'Requires a single address' });
+  }
+
   try {
     const keyExists = await redis.exists(verificationId);
 

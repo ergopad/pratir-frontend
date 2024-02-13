@@ -67,7 +67,7 @@ const UserMenu: FC<IUserMenuProps> = ({ }) => {
     <>
       {walletAddress ? (
         <>
-          <Button sx={{ color: theme.palette.text.primary }} onClick={handleClick}>
+          <Button variant="contained" sx={{ color: theme.palette.text.primary }} onClick={handleClick}>
             {getShorterAddress(walletAddress, 4)}
           </Button>
           <Menu
@@ -76,66 +76,14 @@ const UserMenu: FC<IUserMenuProps> = ({ }) => {
             open={open}
             onClose={handleClose}
             onClick={handleClose}
-            PaperProps={{
-              elevation: 1,
-              sx: {
-                overflow: 'visible',
-                filter: 'drop-shadow(0px 2px 8px rgba(0,0,0,0.32))',
-                minWidth: '230px',
-                mt: 0,
-                '& .MuiAvatar-root': {
-                  width: 32,
-                  height: 32,
-                  ml: -0.5,
-                  mr: 1,
-                },
-                '&:before': {
-                  content: '""',
-                  display: 'block',
-                  position: 'absolute',
-                  top: 0,
-                  right: 15,
-                  width: 10,
-                  height: 10,
-                  bgcolor: 'background.paper',
-                  transform: 'translateY(-50%) rotate(45deg)',
-                  zIndex: 0,
-                },
-              },
-            }}
             transformOrigin={{ horizontal: 'right', vertical: 'top' }}
             anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
           >
-            <MenuItem
-              sx={{ mt: '6px' }}
-              onClick={() => router.push('/users/' + walletAddress)}
-            >
-              <Avatar /> View Profile
-            </MenuItem>
-            <Divider />
             <MenuItem onClick={() => router.push('/open-packs')}>
               <ListItemIcon>
                 <RedeemIcon fontSize="small" />
               </ListItemIcon>
               Open Packs
-            </MenuItem>
-            <MenuItem onClick={() => router.push('/sell')}>
-              <ListItemIcon>
-                <SellIcon fontSize="small" />
-              </ListItemIcon>
-              Sell Tokens
-            </MenuItem>
-            <MenuItem onClick={() => router.push('/manage-sales')}>
-              <ListItemIcon>
-                <EditIcon fontSize="small" />
-              </ListItemIcon>
-              Manage Sales
-            </MenuItem>
-            <MenuItem onClick={() => router.push('/user-settings/')}>
-              <ListItemIcon>
-                <Settings fontSize="small" />
-              </ListItemIcon>
-              Edit Profile
             </MenuItem>
             <MenuItem onClick={() => setAddWalletModalOpen(true)}>
               <ListItemIcon>

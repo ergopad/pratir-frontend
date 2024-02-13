@@ -21,11 +21,8 @@ import DirectSalesCard from '@components/token/DirectSalesCard';
 import dayjs from 'dayjs';
 import PackTokenSelector from '@components/token/PackTokenSelector';
 import { formatNumber } from '@lib/utilities/general';
-import { getTokenData, IToken } from '@lib/utilities/assets';
-import HideImageIcon from '@mui/icons-material/HideImage';
-import AudiotrackIcon from "@mui/icons-material/Audiotrack";
-import { ApiContext, IApiContext } from "@contexts/ApiContext";
 import UserMenu from '@components/user/UserMenu';
+import { trpc } from '@server/utils/trpc';
 
 interface ISale {
   id: string;
@@ -241,18 +238,22 @@ const MintSaleInfo: FC<{
   })
   const [openNow, setOpenNow] = useState<boolean>(false)
   const [derivedPrices, setDerivedPrices] = useState<IDerivedPrice[]>([])
-  const apiContext = useContext<IApiContext>(ApiContext);
+  const currentSale = trpc.api.get.useQuery(
+    { url: `/sale/${props.saleId}` },
+    {
+      enabled: !!props.saleId
+    }
+  )
 
   useEffect(() => {
     const fetchData = async () => {
-      const currentSale: any = await apiContext.api.get(`/sale/${props.saleId}`)
       setApiGetSaleById(currentSale.data)
       console.log(currentSale.data)
       setLoading(false)
     }
 
-    if (props.saleId) fetchData();
-  }, [props.saleId])
+    if (currentSale.isFetched && !currentSale.isError) fetchData();
+  }, [currentSale.isFetched])
 
   // Utility function to calculate price and determine currency
   const getPriceAndCurrency = (pack: IPack) => {

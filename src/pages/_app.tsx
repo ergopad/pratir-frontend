@@ -1,18 +1,16 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import "@styles/globals.css";
 import type { AppProps } from "next/app";
 import { theme } from "@theme/theme";
 import { ThemeProvider } from "@mui/material/styles";
 import CssBaseline from "@mui/material/CssBaseline";
 import Head from "next/head";
-import { ThemeContext } from "@contexts/ThemeContext";
 import { WalletContext } from "@contexts/WalletContext";
-import { UserContext } from "@contexts/UserContext";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
-import AlertWrapper, { IAlertMessages } from "@components/AlertWrapper";
-import { ApiContext } from "@contexts/ApiContext";
-import AppApi from "@lib/utilities/api";
+import { trpc } from "@server/utils/trpc"
+import { AlertProvider } from "@contexts/AlertContext";
+import AlertComponent from "@components/AlertComponent";
 
 function MyApp({ Component, pageProps }: AppProps) {
   const [walletAddress, setWalletAddress] = useState("");
@@ -23,8 +21,6 @@ function MyApp({ Component, pageProps }: AppProps) {
   });
   const [expanded, setExpanded] = useState<string | false>(false);
   const [addWalletModalOpen, setAddWalletModalOpen] = useState(false);
-  const [userInfo, setUserInfo] = useState({ address: "" });
-  const [alert, setAlert] = useState<IAlertMessages[]>([]);
 
   return (
     <>
@@ -51,18 +47,11 @@ function MyApp({ Component, pageProps }: AppProps) {
               setExpanded,
             }}
           >
-            <ApiContext.Provider value={{ api: new AppApi(setAlert) }}>
+            <AlertProvider>
               <CssBaseline enableColorScheme />
+              <AlertComponent />
               <Component {...pageProps} />
-              <AlertWrapper
-                alerts={alert}
-                close={(i: number) => {
-                  setAlert((prevState) =>
-                    prevState.filter((_item, idx) => idx !== i)
-                  );
-                }}
-              />
-            </ApiContext.Provider>
+            </AlertProvider>
           </WalletContext.Provider>
         </ThemeProvider>
       </LocalizationProvider>
@@ -70,4 +59,4 @@ function MyApp({ Component, pageProps }: AppProps) {
   );
 }
 
-export default MyApp;
+export default trpc.withTRPC(MyApp);

@@ -15,8 +15,9 @@ import { WalletContext } from "@contexts/WalletContext";
 import { DataGrid, GridColDef } from "@mui/x-data-grid";
 import Link from "@components/Link";
 import { stringToUrl } from "@lib/utilities/general";
-import { ApiContext, IApiContext } from "@contexts/ApiContext";
 import { getErgoWalletContext } from "@components/wallet/AddWallet";
+import { useAlert } from "@contexts/AlertContext";
+import { trpc } from "@server/utils/trpc";
 
 const defaultCollection = {
   status: "NOT_AVAILABLE",
@@ -37,20 +38,25 @@ interface ISaleCollectionStatus {
 const ManageSales: NextPage = () => {
   const theme = useTheme();
   const { walletAddress, setAddWalletModalOpen } = useContext(WalletContext);
-  const apiContext = useContext<IApiContext>(ApiContext);
+  const { addAlert } = useAlert();
   const [apiRows, setApiRows] = useState<ISaleCollectionStatus[]>([]);
   const [loading, setLoading] = useState(false);
 
+  const getSales = trpc.api.get.useQuery(
+    { url: `/sale?address=${walletAddress}` },
+    { enabled: !!walletAddress }
+  )
+  const getCollections = trpc.api.get.useQuery(
+    { url: `/collection?address=${walletAddress}` },
+    { enabled: !!walletAddress }
+  )
+
   useEffect(() => {
-    const getSales = async (walletAddress: string) => {
+    const fetchSales = async () => {
       setLoading(true);
       try {
-        const sales = (
-          await apiContext.api.get(`/sale?address=${walletAddress}`)
-        ).data;
-        const collections = (
-          await apiContext.api.get(`/collection?address=${walletAddress}`)
-        ).data;
+        const sales = getSales.data;
+        const collections = getCollections.data;
         // join
         const joined = sales.map((sale: any) => {
           const collection =
@@ -74,26 +80,29 @@ const ManageSales: NextPage = () => {
         });
         setApiRows(joined);
       } catch (e: any) {
-        apiContext.api.error(e);
+        addAlert('error', e);
       }
       setLoading(false);
     };
-    if (walletAddress) {
-      getSales(walletAddress);
-    }
-  }, [walletAddress]);
+    if (getSales.isFetched && getCollections.isFetched) fetchSales();
+  }, [getSales.isFetched, getCollections.isFetched]);
+
+
+  const bootstrapTxApi = trpc.api.post.useMutation()
 
   const bootstrap = async (saleId: string) => {
     try {
-      const res = await apiContext.api.post("/sale/bootstrap", {
-        saleId: saleId,
-        sourceAddresses: [walletAddress],
+      const res = await bootstrapTxApi.mutateAsync({
+        url: "/sale/bootstrap", body: {
+          saleId: saleId,
+          sourceAddresses: [walletAddress],
+        }
       });
       const tx = res.data;
       const context = await getErgoWalletContext();
       const signedtx = await context.sign_tx(tx);
       const ok = await context.submit_tx(signedtx);
-      apiContext.api.ok(`Submitted Transaction: ${ok}`);
+      addAlert('success', `Submitted Transaction: ${ok}`);
       setApiRows(
         apiRows.map((row) => {
           if (row.id === saleId) {
@@ -106,7 +115,7 @@ const ManageSales: NextPage = () => {
         })
       );
     } catch (e: any) {
-      apiContext.api.error(e);
+      addAlert('error', e);
     }
   };
 

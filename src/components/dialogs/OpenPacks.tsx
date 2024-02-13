@@ -19,10 +19,11 @@ import {
 import Grid2 from '@mui/material/Unstable_Grid2';
 import TaskAltIcon from '@mui/icons-material/TaskAlt';
 import CancelOutlinedIcon from '@mui/icons-material/CancelOutlined';
-import { ApiContext, IApiContext } from "@contexts/ApiContext";
 import { getErgoWalletContext } from "@components/wallet/AddWallet";
 import { WalletContext } from '@contexts/WalletContext';
 import { IOrderRequests, IOrder } from '@components/dialogs/ConfirmPurchase';
+import { useAlert } from '@contexts/AlertContext';
+import { trpc } from '@server/utils/trpc';
 
 const BootstrapDialog = styled(Dialog)(({ theme }) => ({
   '& .MuiDialogContent-root': {
@@ -110,18 +111,21 @@ const OpenPacks: FC<IOpenPacksProps> = ({ open, setOpen, packs }) => {
     setAddWalletModalOpen,
     dAppWallet
   } = useContext(WalletContext);
-  const apiContext = useContext<IApiContext>(ApiContext);
+  const { addAlert } = useAlert();
+  const getSaleList = trpc.api.get.useQuery(
+    { url: "/sale" }
+  )
 
   const buildOrder = async (tokenIdArray: IToken[]): Promise<IOrder> => {
     const fetchSaleData = async (tokenIds: IToken[]): Promise<IOrderRequests[]> => {
-      const saleList = await apiContext.api.get("/sale")
+      const saleList = getSaleList.data
       const orderRequests: IOrderRequests[] = [];
-     
+
       tokenIds.forEach((tokenIdObj) => {
         const tokenId = tokenIdObj.tokenId;
         const count = tokenIdObj.qty;
         const sale = findObjectByTokenId(saleList.data, tokenId)
-        
+
         if (sale) {
           const saleId = sale.saleId;
           let orderRequest = orderRequests.find((request) => request.saleId === saleId);
@@ -134,34 +138,39 @@ const OpenPacks: FC<IOpenPacksProps> = ({ open, setOpen, packs }) => {
           }
           orderRequest.packRequests.push({
             packId: sale.packId,
-            count: count
+            count: count,
+            currencyTokenId: ''
           });
         }
       });
       console.log(orderRequests)
       return orderRequests;
     }
-    const reduceSaleList = await fetchSaleData(tokenIdArray);
-    let walletArray = []
-    if (dAppWallet.connected === true) {
-      walletArray = dAppWallet.addresses
-    }
-    else walletArray = [walletAddress]
-    return {
-      targetAddress: walletArray[0],
-      userWallet: walletArray,
-      txType: "EIP-12",
-      requests: reduceSaleList
-    }
+    if (getSaleList.isFetched) {
+      const reduceSaleList = await fetchSaleData(tokenIdArray);
+      let walletArray = []
+      if (dAppWallet.connected === true) {
+        walletArray = dAppWallet.addresses
+      }
+      else walletArray = [walletAddress]
+      return {
+        targetAddress: walletArray[0],
+        userWallet: walletArray,
+        txType: "EIP-12",
+        requests: reduceSaleList
+      }
+    } else throw new Error
   }
+
+  const openTxApi = trpc.api.post.useMutation()
 
   const getOpenTx = async (order: IOrder) => {
     try {
-      const res = await apiContext.api.post(`/order`, order);
-      apiContext.api.ok("Open order sent");
+      const res = await openTxApi.mutateAsync({ url: `/order`, body: order });
+      addAlert('success', "Open order sent");
       return res.data;
     } catch (e: any) {
-      apiContext.api.error(e);
+      addAlert('error', e.message);
     }
   };
 
@@ -184,16 +193,16 @@ const OpenPacks: FC<IOpenPacksProps> = ({ open, setOpen, packs }) => {
         const context = await getErgoWalletContext();
         const signedtx = await context.sign_tx(tx);
         const ok = await context.submit_tx(signedtx);
-        apiContext.api.ok(`Submitted Transaction: ${ok}`);
+        addAlert('success', `Submitted Transaction: ${ok}`);
         setSubmitting('success')
       }
       else {
-        apiContext.api.error('Not built correctly');
+        addAlert('error', 'Not built correctly');
         setSubmitting('failed')
       }
 
     } catch (e: any) {
-      apiContext.api.error(e);
+      addAlert('error', e);
       setSubmitting('failed')
       console.error(e);
     }

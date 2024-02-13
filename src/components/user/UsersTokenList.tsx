@@ -20,7 +20,6 @@ import SortBy from '@components/SortBy'
 import LoadingCard from '@components/LoadingCard'
 import { filterInit, IFilters } from '@components/FilterOptions';
 import { WalletContext } from "@contexts/WalletContext";
-import { ApiContext, IApiContext } from "@contexts/ApiContext";
 import { tokenListInfo } from '@lib/utilities/assetsNew';
 
 export interface IUsersTokenListProps {

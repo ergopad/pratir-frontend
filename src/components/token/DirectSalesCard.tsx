@@ -1,5 +1,4 @@
-import React, { FC, useState, useEffect, useMemo, useContext } from 'react';
-import type { NextPage } from 'next'
+import React, { FC, useState, useEffect } from 'react';
 import {
   Grid,
   Typography,
@@ -15,15 +14,7 @@ import {
 } from '@mui/material'
 import NumberIncrement from '@components/forms/NumberIncrement';
 import ConfirmPurchase from '@components/dialogs/ConfirmPurchase';
-import { ApiContext, IApiContext } from '@contexts/ApiContext';
 import { IDerivedPrice } from '@components/sales/MintSaleInfo';
-
-/// API NEEDED ////////
-const ApiPriceConversion: { [key: string]: number } = {
-  erg: 1.51,
-  ergopad: 0.006
-}
-/// END API NEEDED ///
 
 export interface IDirectSalesCardProps {
   tokenName: string;
@@ -62,24 +53,11 @@ const DirectSalesCard: FC<IDirectSalesCardProps> = (props) => {
   const [confirmationOpen, setConfirmationOpen] = useState(false)
   const [totalPrice, setTotalPrice] = useState(0)
   const [purchaseCurrency, setPurchaseCurrency] = useState('Erg')
-  const [apiPriceConversion, setApiPriceConversion] = useState<{ [key: string]: number }>({
-    erg: 0
-  })
-  const apiContext = useContext<IApiContext>(ApiContext);
 
   useEffect(() => {
     setNumberSold(1)
   }, [price])
 
-  useEffect(() => {
-    const fetchData = async () => {
-      const ergPrice = await apiContext.api.get(`/asset/price/ergo`, 'https://api.ergopad.io')
-      setApiPriceConversion({
-        erg: ergPrice.data.price
-      })
-    }
-    fetchData();
-  }, [])
 
   const [availablePrices, setAvailablePrices] = useState<{
     erg: number | undefined;
@@ -164,16 +142,6 @@ const DirectSalesCard: FC<IDirectSalesCardProps> = (props) => {
                     >
                       ${(price * numberSold).toFixed(2)}
                     </Typography>
-                    {currency === 'Erg' &&
-                      <Typography
-                        sx={{
-                          color: theme.palette.text.secondary,
-                          fontSize: '0.875rem'
-                        }}
-                      >
-                        ${(apiPriceConversion['erg'] * price * numberSold).toFixed(2)} USD
-                      </Typography>
-                    }
                   </Box>
                 </Grid>
                 <Grid item xs="auto" sx={{ textAlign: 'right' }}>

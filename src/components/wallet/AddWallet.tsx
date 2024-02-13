@@ -106,7 +106,7 @@ export const AddWallet = () => {
       walletAddressList !== null &&
       dappConnected !== "" &&
       dappName !== "" &&
-      walletAddressList !== ""
+      walletAddressList !== "" && walletAddressList !== "undefined"
     ) {
       setDAppWallet({
         connected: dappConnected === "true" ? true : false,
@@ -408,27 +408,6 @@ export const AddWallet = () => {
           })}
 
           <Collapse in={expanded === "mobile"} mountOnEnter unmountOnExit>
-            <TextField
-              disabled={walletAddress != ""}
-              autoFocus
-              margin="dense"
-              id="name"
-              label="Wallet address"
-              type="wallet"
-              fullWidth
-              variant="outlined"
-              value={walletInput}
-              onChange={handleWalletFormChange}
-              error={!isAddressValid(walletInput)}
-              sx={{
-                "& .MuiOutlinedInput-input:-webkit-autofill": {
-                  boxShadow: "0 0 0 100px rgba(35, 35, 39, 1) inset",
-                },
-              }}
-            />
-            <FormHelperText error={true}>
-              {!isAddressValid(walletInput) ? "Invalid ergo address." : ""}
-            </FormHelperText>
             <AddMobileAddress />
           </Collapse>
 

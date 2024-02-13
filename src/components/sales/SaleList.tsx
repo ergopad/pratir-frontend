@@ -20,7 +20,8 @@ import SortBy from '@components/SortBy'
 import LoadingCard from '@components/LoadingCard'
 import SaleCard, { ISaleCardItem } from '@components/sales/SaleCard';
 import { filterInit, IFilters } from '@components/FilterOptions';
-import { ApiContext, IApiContext } from "@contexts/ApiContext";
+import { useAlert } from '@contexts/AlertContext';
+import { trpc } from '@server/utils/trpc';
 
 export interface ISaleListProps {
   notFullWidth?: boolean;
@@ -74,7 +75,7 @@ const SaleList: FC<ISaleListProps> = ({ notFullWidth, collection, artistAddress 
   const [displayedData, setDisplayedData] = useState<INftItem[]>([{ link: '', name: '', tokenId: '' }]) // data after search, sort, and filter
   const [localLoading, setLocalLoading] = useState(true)
   const [ready, setReady] = useState(false)
-  const apiContext = useContext<IApiContext>(ApiContext);
+  const { addAlert } = useAlert();
 
   useEffect(() => {
     if (ready) {
@@ -88,10 +89,11 @@ const SaleList: FC<ISaleListProps> = ({ notFullWidth, collection, artistAddress 
     }
   }, [filteredData, searchString, sortBy]);
 
+  const saleData = trpc.api.get.useQuery({ url: "/sale" })
+
   useEffect(() => {
     const fetchData = async () => {
-      const saleList = await apiContext.api.get("/sale")
-      let currentSales = saleList.data
+      let currentSales = saleData.data
         .filter((item: any) => item?.status === 'WAITING' || item?.status === 'LIVE')
 
       if (collection) {
@@ -131,9 +133,11 @@ const SaleList: FC<ISaleListProps> = ({ notFullWidth, collection, artistAddress 
       setFilteredData(displaySales)
       setLocalLoading(false)
     }
-    fetchData();
-    setReady(true)
-  }, [])
+    if (saleData.isFetched) {
+      fetchData();
+      setReady(true)
+    }
+  }, [saleData.isFetched])
 
   const handleDialogClick = () => {
     setFilterDialogOpen(true);

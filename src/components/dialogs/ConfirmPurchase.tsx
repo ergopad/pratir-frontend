@@ -25,10 +25,12 @@ import {
 } from '@mui/material';
 import TaskAltIcon from '@mui/icons-material/TaskAlt';
 import CancelOutlinedIcon from '@mui/icons-material/CancelOutlined';
-import { ApiContext, IApiContext } from "@contexts/ApiContext";
 import { getErgoWalletContext } from "@components/wallet/AddWallet";
 import { WalletContext } from '@contexts/WalletContext';
 import Link from '@components/Link';
+import { useAlert } from '@contexts/AlertContext';
+import { trpc } from '@server/utils/trpc';
+import { TRPCError } from '@trpc/server';
 
 const BootstrapDialog = styled(Dialog)(({ theme }) => ({
   '& .MuiDialogContent-root': {
@@ -109,7 +111,7 @@ const ConfirmPurchase: FC<IConfirmPurchaseProps> = ({ open, setOpen, saleId, pac
     setAddWalletModalOpen,
     dAppWallet
   } = useContext(WalletContext);
-  const apiContext = useContext<IApiContext>(ApiContext);
+  const { addAlert } = useAlert();
   const [successTx, setSuccessTx] = useState('')
 
   const handleBidChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -140,13 +142,16 @@ const ConfirmPurchase: FC<IConfirmPurchaseProps> = ({ open, setOpen, saleId, pac
     }
   }
 
+  const purchaseTxApi = trpc.api.post.useMutation()
+
   const getPurchaseTx = async (order: IOrder) => {
     try {
-      const res = await apiContext.api.post(`/order`, order);
-      apiContext.api.ok("Open order sent");
+      const res = await purchaseTxApi.mutateAsync({ url: `/order`, body: order });
+      console.log(res)
+      addAlert('success', "Open order sent");
       return res.data;
     } catch (e: any) {
-      apiContext.api.error(e);
+      throw e;
     }
   };
 
@@ -160,16 +165,21 @@ const ConfirmPurchase: FC<IConfirmPurchaseProps> = ({ open, setOpen, saleId, pac
         const context = await getErgoWalletContext();
         const signedtx = await context.sign_tx(tx);
         const ok = await context.submit_tx(signedtx);
-        apiContext.api.ok(`Submitted Transaction: ${ok}`);
+        addAlert('success', `Submitted Transaction: ${ok}`);
         setSuccessTx(ok)
         setSubmitting('success')
       }
       else {
-        apiContext.api.error('Not built correctly');
+        addAlert('error', 'Not built correctly');
         setSubmitting('failed')
       }
     } catch (e: any) {
-      apiContext.api.error(e);
+      if (e.message) {
+        addAlert('error', e.message);
+      }
+      else {
+        addAlert('error', 'An unknown error occured');
+      }
       setSubmitting('failed')
       console.error(e);
     }
