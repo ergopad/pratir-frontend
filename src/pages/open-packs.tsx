@@ -181,7 +181,7 @@ const Open: NextPage = () => {
               Open Packs
             </Typography>
             <Typography variant="body2" sx={{ mb: 0 }}>
-              Any unopened pack tokens are visible here. You may open one at a time, or all at once.
+              Any unopened pack tokens are visible here. You may open one at a time, or open all at once.
             </Typography>
           </Grid>
           <Grid item md={6} sx={{ textAlign: 'right' }}>
