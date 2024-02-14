@@ -14,7 +14,6 @@ import {
 } from '@mui/material'
 import NumberIncrement from '@components/forms/NumberIncrement';
 import ConfirmPurchase from '@components/dialogs/ConfirmPurchase';
-import { IDerivedPrice } from '@components/sales/MintSaleInfo';
 import { WalletContext } from '@contexts/WalletContext';
 
 export interface IDirectSalesCardProps {

@@ -83,7 +83,6 @@ const Open: NextPage = () => {
 
   const rand = useMemo(() => randomInteger(1, 18), [1, 18]);
 
-
   return (
     <>
       <Box
