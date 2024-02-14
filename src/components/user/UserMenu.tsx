@@ -67,8 +67,8 @@ const UserMenu: FC<IUserMenuProps> = ({ }) => {
     <>
       {walletAddress ? (
         <>
-          <Button variant="contained" sx={{ color: theme.palette.text.primary }} onClick={handleClick}>
-            {getShorterAddress(walletAddress, 4)}
+          <Button variant="contained" onClick={handleClick}>
+            {getShorterAddress(walletAddress, 5)}
           </Button>
           <Menu
             anchorEl={anchorEl}
@@ -100,7 +100,7 @@ const UserMenu: FC<IUserMenuProps> = ({ }) => {
           </Menu>
         </>
       ) : (
-        <Button variant="contained" sx={{ color: theme.palette.text.primary }} onClick={() => setAddWalletModalOpen(true)}>
+        <Button variant="contained" onClick={() => setAddWalletModalOpen(true)}>
           Connect Wallet
         </Button>
       )}

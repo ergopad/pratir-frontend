@@ -1,21 +1,38 @@
-MIT License
+Proprietary Software License Agreement
 
-Copyright (c) 2022 esot321c
+1. Definitions
+   - "License" refers to the terms and conditions for use, reproduction, and distribution as defined by Sections 1 through 9 of this document.
+   - "Licensor" refers to the copyright owner or entity authorized by the copyright owner that is granting the License.
+   - "You" (or "Your") refers to an individual or legal entity exercising permissions granted by this License.
+   - "Source" form shall mean the preferred form for making modifications, including but not limited to software source code, documentation source, and configuration files.
+   - "Object" form shall mean any form resulting from mechanical transformation or translation of a Source form, including but not limited to compiled object code, generated documentation, and conversions to other media types.
+   - "Software" refers to the collection of files provided by the Licensor, including but not limited to the Source form of the software, documentation, data files, and executable files.
 
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
+2. Grant of Copyright License
+   Subject to the terms and conditions of this License, the Licensor hereby grants You a worldwide, non-exclusive, non-transferable, non-sublicensable license to use the Software in Object form for personal, non-commercial use only.
 
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
+3. Restrictions
+   - You may not distribute or make the Software available over a network where it could be used by multiple devices at the same time.
+   - You may not rent, lease, lend, sell, redistribute, or sublicense the Software.
+   - You may not copy (except as expressly permitted by this License), decompile, reverse-engineer, disassemble, attempt to derive the source code of, modify, or create derivative works of the Software, any updates, or any part thereof (except as and only to the extent any foregoing restriction is prohibited by applicable law).
 
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
+4. Ownership
+   The Software is licensed, not sold. This agreement only gives You some rights to use the Software. The Licensor reserves all other rights.
+
+5. Termination
+   The license is effective until terminated by You or the Licensor. Your rights under this License will terminate automatically without notice from the Licensor if You fail to comply with any term(s) of this License.
+
+6. Disclaimer of Warranty
+   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE LICENSORS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+7. Limitation of Liability
+   In no event, unless required by applicable law or agreed to in writing, shall any contributor be liable for any direct, indirect, incidental, special, exemplary, or consequential damages (including, but not limited to, procurement of substitute goods or services; loss of use, data, or profits; or business interruption) however caused and on any theory of liability, whether in contract, strict liability, or tort (including negligence or otherwise) arising in any way out of the use of this Software, even if advised of the possibility of such damage.
+
+8. Interpretation of Sections
+   The section titles in this License are for convenience only and have no legal or contractual effect.
+
+9. Acceptance
+   By downloading, installing, using, or copying this Software, You agree to be bound by the terms of this License. If You do not agree to the terms of this License, do not download, install, use, or copy the Software.
+
+Copyright 2024 ergopad.io
+All Rights Reserved

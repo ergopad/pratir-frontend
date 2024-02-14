@@ -1,4 +1,4 @@
-import React, { FC, useState, useEffect } from 'react';
+import React, { FC, useState, useEffect, useContext } from 'react';
 import {
   Grid,
   Typography,
@@ -15,6 +15,7 @@ import {
 import NumberIncrement from '@components/forms/NumberIncrement';
 import ConfirmPurchase from '@components/dialogs/ConfirmPurchase';
 import { IDerivedPrice } from '@components/sales/MintSaleInfo';
+import { WalletContext } from '@contexts/WalletContext';
 
 export interface IDirectSalesCardProps {
   tokenName: string;
@@ -54,10 +55,14 @@ const DirectSalesCard: FC<IDirectSalesCardProps> = (props) => {
   const [totalPrice, setTotalPrice] = useState(0)
   const [purchaseCurrency, setPurchaseCurrency] = useState('Erg')
 
+  const {
+    walletAddress,
+    setAddWalletModalOpen
+  } = useContext(WalletContext);
+
   useEffect(() => {
     setNumberSold(1)
   }, [price])
-
 
   const [availablePrices, setAvailablePrices] = useState<{
     erg: number | undefined;
@@ -101,8 +106,6 @@ const DirectSalesCard: FC<IDirectSalesCardProps> = (props) => {
       }
     }
   }
-
-
 
   return (
     <>
@@ -180,38 +183,46 @@ const DirectSalesCard: FC<IDirectSalesCardProps> = (props) => {
                 Buy with {currency}
               </Button> */}
 
-
-              <Grid container spacing={2} sx={{ mb: 2 }}>
-                <Grid item xs={12} sm={6}>
-                  <Button
-                    onClick={() => apiFormSubmit('erg')}
-                    fullWidth
-                    variant="outlined"
-                    disabled={soldOut || !availablePrices.erg}
-                  >
-                    Buy with Erg
+              {!walletAddress
+                ? <Box sx={{ textAlign: 'center' }}>
+                  <Button variant="contained" onClick={() => setAddWalletModalOpen(true)}>
+                    Connect wallet to purchase
                   </Button>
-                </Grid>
-                <Grid item xs={12} sm={6}>
+                </Box>
+                : <>
+                  <Grid container spacing={2} sx={{ mb: 2 }}>
+                    <Grid item xs={12} sm={6}>
+                      <Button
+                        onClick={() => apiFormSubmit('erg')}
+                        fullWidth
+                        variant="outlined"
+                        disabled={soldOut || !availablePrices.erg}
+                      >
+                        Buy with Erg
+                      </Button>
+                    </Grid>
+                    <Grid item xs={12} sm={6}>
+                      <Button
+                        onClick={() => apiFormSubmit('sigusd')}
+                        fullWidth
+                        disabled={soldOut}
+                        variant="contained"
+                      >
+                        Buy with SigUSD
+                      </Button>
+                    </Grid>
+                  </Grid>
+
                   <Button
-                    onClick={() => apiFormSubmit('sigusd')}
+                    onClick={() => apiFormSubmit('blitz')}
                     fullWidth
-                    disabled={soldOut}
+                    disabled={soldOut || !availablePrices.blitz}
                     variant="contained"
                   >
-                    Buy with SigUSD
+                    Buy with Blitz (10% Discount)
                   </Button>
-                </Grid>
-              </Grid>
+                </>}
 
-              <Button
-                onClick={() => apiFormSubmit('blitz')}
-                fullWidth
-                disabled={soldOut || !availablePrices.blitz}
-                variant="contained"
-              >
-                Buy with Blitz (10% Discount)
-              </Button>
 
               {soldOut && <Box>
                 <Typography variant="body2" sx={{ mt: 1, mb: 0 }}>

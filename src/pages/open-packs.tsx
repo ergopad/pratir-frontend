@@ -13,6 +13,8 @@ import OpenPacks from '@components/dialogs/OpenPacks';
 import { WalletContext } from '@contexts/WalletContext';
 import NftCard from '@components/NftCard';
 import { getWalletList, tokenListInfo } from "@lib/utilities/assetsNew";
+import UserMenu from '@components/user/UserMenu';
+import { useRouter } from 'next/router';
 
 const randomInteger = (min: number, max: number) => {
   return (min + Math.random() * (max - min)).toFixed();
@@ -20,6 +22,7 @@ const randomInteger = (min: number, max: number) => {
 
 const Open: NextPage = () => {
   const theme = useTheme();
+  const router = useRouter()
   const [confirmationOpen, setConfirmationOpen] = useState(false)
   const {
     walletAddress,
@@ -80,35 +83,60 @@ const Open: NextPage = () => {
 
   const rand = useMemo(() => randomInteger(1, 18), [1, 18]);
 
+
   return (
     <>
-      {walletAddress !== '' && nftList && (
-        <Box
-          sx={{
-            position: 'fixed',
+      <Box
+        sx={{
+          position: 'fixed',
+          top: 0,
+          background: theme.palette.mode == 'dark' ? "rgba(15,21,32,0.9)" : "rgba(235,235,235,0.9)",
+          '&:before': {
+            pointerEvents: 'none',
+            inset: 0,
+            background: 'linear-gradient(to right,#a99151 22%,#877036 24%,#ffffcf 26%,#d0b46c 27%,#f2d68d 40%,#a49053 78%)',
+            paddingBottom: '2px',
+            content: '""',
+            position: 'absolute',
             top: 0,
-            background: theme.palette.mode == 'dark' ? "rgba(15,21,32,0.9)" : "rgba(235,235,235,0.9)",
-            '&:before': {
-              pointerEvents: 'none',
-              inset: 0,
-              background: 'linear-gradient(to right,#a99151 22%,#877036 24%,#ffffcf 26%,#d0b46c 27%,#f2d68d 40%,#a49053 78%)',
-              paddingBottom: '2px',
-              content: '""',
-              position: 'absolute',
-              top: 0,
-              left: 0,
-              boxSizing: 'border-box',
-              WebkitMask: 'linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)',
-              mask: 'linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)',
-              WebkitMaskComposite: 'xor',
-              maskComposite: 'exclude',
-            },
-            backdropFilter: "blur(25px)",
-            zIndex: 100,
-            width: '100%',
+            left: 0,
+            boxSizing: 'border-box',
+            WebkitMask: 'linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)',
+            mask: 'linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)',
+            WebkitMaskComposite: 'xor',
+            maskComposite: 'exclude',
+          },
+          backdropFilter: "blur(25px)",
+          zIndex: 100,
+          pt: '10px',
+          pb: '12px',
+          width: '100%',
+        }}
+      >
+        <Container
+          sx={{
+            display: 'flex',
+            flexDirection: 'row',
+            justifyContent: 'space-between',
+            flexWrap: 'wrap',
+            gap: 2,
           }}
         >
-          <Container sx={{ textAlign: 'right', py: '6px' }}>
+          <Box sx={{ order: 1 }}>
+            <Button variant="contained" onClick={() => { router.push('/marketplace/sale/blitz-first-edition-test-aa') }}>
+              Back to sale
+            </Button>
+          </Box>
+          <Box sx={{
+            display: 'flex',
+            flexDirection: 'row',
+            gap: 1,
+            width: { xs: '100%', sm: 'auto' },
+            justifyContent: 'center',
+            alignItems: 'center',
+            flexWrap: 'wrap',
+            order: { sm: 2, xs: 3 },
+          }}>
             <Button
               size="small"
               variant="text"
@@ -133,10 +161,21 @@ const Open: NextPage = () => {
             >
               Open Selected
             </Button>
-          </Container>
-        </Box>
-      )}
-      <Container sx={{ mt: '70px', mb: '50px' }}>
+          </Box>
+          <Box
+            sx={{
+              display: 'flex',
+              flexDirection: 'row',
+              justifyContent: 'flex-end',
+              order: { sm: 3, xs: 2 },
+            }}
+          >
+            <UserMenu />
+          </Box>
+        </Container>
+      </Box>
+
+      <Container sx={{ pt: { xs: '125px', sm: '70px' } }}>
         <Grid container sx={{ mb: '36px' }} alignItems="flex-end">
           <Grid item md={6}>
             <Typography variant="h1">

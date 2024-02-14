@@ -108,7 +108,6 @@ const ConfirmPurchase: FC<IConfirmPurchaseProps> = ({ open, setOpen, saleId, pac
   const [error, setError] = useState(false)
   const {
     walletAddress,
-    setAddWalletModalOpen,
     dAppWallet
   } = useContext(WalletContext);
   const { addAlert } = useAlert();
@@ -147,9 +146,7 @@ const ConfirmPurchase: FC<IConfirmPurchaseProps> = ({ open, setOpen, saleId, pac
   const getPurchaseTx = async (order: IOrder) => {
     try {
       const res = await purchaseTxApi.mutateAsync({ url: `/order`, body: order });
-      console.log(res)
-      addAlert('success', "Open order sent");
-      return res.data;
+      return res
     } catch (e: any) {
       throw e;
     }
@@ -159,15 +156,21 @@ const ConfirmPurchase: FC<IConfirmPurchaseProps> = ({ open, setOpen, saleId, pac
     setSubmitting('submitting');
     try {
       const order = buildOrder()
-      console.log(order)
       if (order.requests.length > 0) {
         const tx = await getPurchaseTx(order);
-        const context = await getErgoWalletContext();
-        const signedtx = await context.sign_tx(tx);
-        const ok = await context.submit_tx(signedtx);
-        addAlert('success', `Submitted Transaction: ${ok}`);
-        setSuccessTx(ok)
-        setSubmitting('success')
+        console.log(tx)
+        if (tx) {
+          if (dAppWallet.connected) {
+            const context = await getErgoWalletContext();
+            const signedtx = await context.sign_tx(tx);
+            const ok = await context.submit_tx(signedtx);
+            addAlert('success', `Submitted Transaction: ${ok}`);
+            setSuccessTx(ok)
+            setSubmitting('success')
+          } else {
+
+          }
+        } else throw new Error
       }
       else {
         addAlert('error', 'Not built correctly');
