@@ -77,11 +77,26 @@ const Ergopay: FC<IErgopayProps> = () => {
   }, [pollVerify.data]);
 
   const copyToClipboard = (link: string) => {
-    navigator.clipboard.writeText(link).then(() => {
-      addAlert('success', 'Link copied to clipboard!');
-    }).catch(err => {
-      addAlert('error', `Failed to copy link: ${err}`);
-    });
+    if (navigator.clipboard) {
+      navigator.clipboard.writeText(link).then(() => {
+        addAlert('success', 'Link copied to clipboard!');
+      }).catch(err => {
+        addAlert('error', `Failed to copy link: ${err}`);
+      });
+    } else {
+      // Fallback using document.execCommand (less reliable and secure)
+      try {
+        const textarea = document.createElement('textarea');
+        textarea.value = link;
+        document.body.appendChild(textarea);
+        textarea.select();
+        document.execCommand('copy');
+        document.body.removeChild(textarea);
+        addAlert('success', 'Link copied to clipboard!');
+      } catch (err) {
+        addAlert('error', `Failed to copy link: ${err}`);
+      }
+    }
   };
 
   return (

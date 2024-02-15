@@ -59,6 +59,9 @@ dependencies:
   dayjs:
     specifier: ^1.11.7
     version: 1.11.10
+  ergo-lib-wasm-nodejs:
+    specifier: ^0.26.0
+    version: 0.26.0
   formidable:
     specifier: ^2.0.1
     version: 2.1.2
@@ -2058,6 +2061,10 @@ packages:
     resolution: {integrity: sha512-ETBauow1T35Y/WZMkio9jiM0Z5xjHHmJ4XmjZOq1l/dXz3lr2sRn87nJy20RupqSh1F2m3HHPSp8ShIPQJrJ3A==}
     dependencies:
       iconv-lite: 0.6.3
+    dev: false
+
+  /ergo-lib-wasm-nodejs@0.26.0:
+    resolution: {integrity: sha512-sG+MOwYKrCgcUbCHwnCOvHHS5wxEkaO/G8zUxlMiX6cSAdN06ddVIGflyqzebKe3z6OO1cN9tfMX0W7fJnzKHg==}
     dev: false
 
   /err-code@3.0.1:

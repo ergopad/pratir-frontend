@@ -95,7 +95,7 @@ const NftCardCard: FC<INftCardCard> = ({
   const [newWidth, setNewWidth] = useState(300)
 
   useEffect(() => {
-    if (width > 260) setNewWidth(width)
+    if (width > 260) setNewWidth(width + 50)
   }, [width])
 
   const [imageUrl, setImageUrl] = useState<string>('')

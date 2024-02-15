@@ -93,3 +93,21 @@ interface IArtist {
   createdAt: string;
   updatedAt: string;
 }
+
+interface IOrderRequests {
+  saleId: string;
+  packRequests: {
+    packId: string;
+    count: number;
+    currencyTokenId: string;
+  }[]
+}
+
+interface IOrder {
+  targetAddress: string;
+  userWallet: string[];
+  txType: 'EIP-12';
+  requests: IOrderRequests[]
+}
+
+type TSubmitting = "submitting" | "ergopay" | "success" | "failed" | undefined

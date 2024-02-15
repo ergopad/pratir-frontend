@@ -90,7 +90,7 @@ const UserProfile: FC<IUserProfileProps> = ({
           <Image
             src={bannerUrl ? bannerUrl : "/images/placeholder/3.jpg"}
             layout="fill"
-            objectFit="cover"
+            // objectFit="cover"
             alt="Banner Image"
             priority
           />
