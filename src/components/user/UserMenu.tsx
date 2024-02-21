@@ -1,9 +1,6 @@
 import React, { FC, useContext } from 'react';
 import {
-  IconButton,
-  Icon,
   useTheme,
-  Avatar,
   Button
 } from '@mui/material'
 import { WalletContext } from '@contexts/WalletContext';
@@ -12,13 +9,9 @@ import AddWallet from '@components/wallet/AddWallet';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import ListItemIcon from '@mui/material/ListItemIcon';
-import Divider from '@mui/material/Divider';
-import Settings from '@mui/icons-material/Settings';
 import Logout from '@mui/icons-material/Logout';
 import AccountBalanceWalletIcon from '@mui/icons-material/AccountBalanceWallet';
 import RedeemIcon from '@mui/icons-material/Redeem';
-import SellIcon from '@mui/icons-material/Sell';
-import EditIcon from '@mui/icons-material/Edit';
 import { getShorterAddress } from '@lib/utilities/general';
 
 interface IUserMenuProps {
