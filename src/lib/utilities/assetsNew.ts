@@ -1,4 +1,4 @@
-import axios from 'axios'
+import axios from 'axios';
 
 export interface IAssetList {
   assets: IToken[],
@@ -151,7 +151,7 @@ export const getWalletList = async (addresses: string[]): Promise<IWalletListTok
         data: {},
       };
     });
-    console.log(balances.data)
+  // console.log(balances.data)
   const balance = reduceBalances(balances.data);
   if (balance) {
     return balance.tokens

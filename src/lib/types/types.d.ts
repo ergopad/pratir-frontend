@@ -111,3 +111,74 @@ interface IOrder {
 }
 
 type TSubmitting = "submitting" | "ergopay" | "success" | "failed" | undefined
+
+interface INftItem {
+  imgUrl?: string;
+  link: string;
+  name: string;
+  tokenId: string;
+  qty?: number;
+  price?: number;
+  currency?: string;
+  rarity?: string;
+  saleType?: 'mint' | 'auction' | 'sale';
+  artist?: string;
+  artistLink?: string;
+  collection?: string;
+  collectionLink?: string;
+  explicit?: boolean;
+  type?: string;
+  loading?: boolean;
+  remainingVest?: number;
+}
+
+interface IPackTokenListItem {
+  amount: number;
+  packId: string;
+  packToken: string;
+  saleId: string;
+}
+
+interface IPackTokenHistoryItem {
+  id: string;
+  userAddress: string;
+  saleId: string;
+  packId: string;
+  packToken: string;
+  orderBoxId: string;
+  followUpTxId: string;
+  tokensBought: [string, number][];
+  status: string;
+  created_at: string; // ISO date string, but consider using `Date` type if you're working with date objects
+  updated_at: string; // ISO date string, similar consideration as `created_at`
+}
+
+interface IRoyalty {
+  address: string;
+  percentage: number;
+}
+
+interface IProperties {
+  [key: string]: string;
+}
+
+interface ILevelsStats {
+  [key: string]: [number, number]; // value, max value
+}
+
+interface IPackInfo {
+  name: string;
+  description: string; // can be JSON string or string
+  decimals: number;
+  minted: number;
+  hash: string;
+  link: string; // empty string if not available
+  royalties?: IRoyalty[];
+  properties?: IProperties;
+  levels?: ILevelsStats;
+  stats?: ILevelsStats;
+  collection?: string;
+  additional_info?: {
+    explicit?: string; // binary flag?
+  };
+}

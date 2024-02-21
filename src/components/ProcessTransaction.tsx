@@ -58,7 +58,7 @@ const ProcessTransaction: FC<IProcessTransactionProps> = ({
             if (dAppWallet.connected) {
               console.log('once')
               const context = await getErgoWalletContext();
-              const signedtx = await context.sign_tx(tx.unsignedTransaction);
+              const signedtx = await context.sign_tx(tx.unsigned.unsignedTransaction);
               const ok = await context.submit_tx(signedtx);
               addAlert('success', `Submitted Transaction: ${ok}`);
               setSuccessTx(ok)

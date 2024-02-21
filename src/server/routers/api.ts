@@ -1,4 +1,5 @@
 import { createTRPCRouter, publicProcedure } from "@server/trpc";
+import { fetchMetadataForTokenIds } from "@server/utils/cruxApi";
 import { mapAxiosErrorToTRPCError } from "@server/utils/mapErrors";
 import axios from "axios";
 import { z } from "zod";
@@ -31,4 +32,14 @@ export const apiRouter = createTRPCRouter({
         throw mapAxiosErrorToTRPCError(error);
       }
     }),
+  getPackTokenMetadata: publicProcedure
+    .input(z.object({
+      tokenIds: z.array(z.string())
+    }))
+    .mutation(async ({ input }) => {
+      const { tokenIds } = input;
+
+      const metadata = await fetchMetadataForTokenIds(tokenIds);
+      return metadata;
+    })
 })

@@ -1,32 +1,20 @@
-import React, { FC, useState, useContext, useEffect } from 'react';
-import Button from '@mui/material/Button';
-import { styled } from '@mui/material/styles';
-import Dialog from '@mui/material/Dialog';
-import DialogTitle from '@mui/material/DialogTitle';
+import React, { FC, useState, useContext } from 'react';
 import DialogContent from '@mui/material/DialogContent';
 import DialogActions from '@mui/material/DialogActions';
-import IconButton from '@mui/material/IconButton';
-import CloseIcon from '@mui/icons-material/Close';
 import Typography from '@mui/material/Typography';
 import Image from 'next/image';
-import Link from '@components/Link';
-import CircularProgress from '@mui/material/CircularProgress';
 import {
   Box,
   useTheme,
   useMediaQuery,
   Collapse,
+  Button,
 } from '@mui/material';
 import Grid2 from '@mui/material/Unstable_Grid2';
-import TaskAltIcon from '@mui/icons-material/TaskAlt';
-import CancelOutlinedIcon from '@mui/icons-material/CancelOutlined';
-import { getErgoWalletContext } from "@components/wallet/AddWallet";
 import { WalletContext } from '@contexts/WalletContext';
 import { useAlert } from '@contexts/AlertContext';
-import { trpc } from '@server/utils/trpc';
 import { BootstrapDialog, BootstrapDialogTitle } from '@components/StyledComponents/BootstrapDialog';
 import ProcessTransaction from '@components/ProcessTransaction';
-
 
 interface IOpenPacksProps {
   open: boolean;
@@ -38,6 +26,7 @@ interface IOpenPacksProps {
     imgUrl: string;
     tokenId: string;
   }[]
+  saleListData: ISale[];
 }
 
 interface IToken {
@@ -61,23 +50,20 @@ const findObjectByTokenId = (array: ISale[], tokenId: string) => {
       }
     }
   }
-  return null; // return null if tokenId is not found in any object
+  return null;
 }
 
-const OpenPacks: FC<IOpenPacksProps> = ({ open, setOpen, packs }) => {
+const OpenPacks: FC<IOpenPacksProps> = ({ open, setOpen, packs, saleListData }) => {
   const {
     walletAddress,
     dAppWallet
   } = useContext(WalletContext);
   const { addAlert } = useAlert();
-  const getSaleList = trpc.api.get.useQuery(
-    { url: "/sale" }
-  )
   const [order, setOrder] = useState<IOrder | undefined>(undefined)
 
   const buildOrder = async (tokenIdArray: IToken[]): Promise<IOrder> => {
     const fetchSaleData = async (tokenIds: IToken[]): Promise<IOrderRequests[]> => {
-      const saleList = getSaleList.data
+      const saleList = saleListData
       const orderRequests: IOrderRequests[] = [];
       tokenIds.forEach((tokenIdObj) => {
         const tokenId = tokenIdObj.tokenId;
@@ -102,22 +88,19 @@ const OpenPacks: FC<IOpenPacksProps> = ({ open, setOpen, packs }) => {
       });
       return orderRequests;
     }
-    if (getSaleList.isFetched) {
-      const reduceSaleList = await fetchSaleData(tokenIdArray);
-      let walletArray = []
-      if (dAppWallet.connected === true) {
-        walletArray = dAppWallet.addresses
-      }
-      else walletArray = [walletAddress]
-      return {
-        targetAddress: walletArray[0],
-        userWallet: walletArray,
-        txType: "EIP-12",
-        requests: reduceSaleList
-      }
-    } else if (getSaleList.isLoading) {
-      addAlert('warning', 'Data loading, please try again');
-    } else throw Error
+    const reduceSaleList = await fetchSaleData(tokenIdArray);
+    let walletArray = []
+    if (dAppWallet.connected === true) {
+      walletArray = dAppWallet.addresses
+    }
+    else walletArray = [walletAddress]
+    return {
+      targetAddress: walletArray[0],
+      userWallet: walletArray,
+      txType: "EIP-12",
+      requests: reduceSaleList
+    }
+
   }
 
   const submit = async () => {
@@ -220,7 +203,13 @@ const OpenPacks: FC<IOpenPacksProps> = ({ open, setOpen, packs }) => {
         <DialogActions sx={{
           display: !order ? 'block' : 'none'
         }}>
-          <Button autoFocus fullWidth onClick={submit} variant="contained">
+          <Button
+            autoFocus
+            fullWidth
+            onClick={submit}
+            variant="contained"
+          // loading={!getSaleList.isFetched}
+          >
             Confirm Open
           </Button>
         </DialogActions>

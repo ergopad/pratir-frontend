@@ -1,61 +1,38 @@
-import React, { FC } from 'react';
+import React, { useState, useEffect } from 'react';
 import type { NextPage } from 'next'
+import { useRouter } from "next/router";
 import {
-  Grid,
   Container,
-  Typography,
-  Box,
-  Button,
-  Card,
-  CardContent,
-  Avatar,
-  useTheme,
-  useMediaQuery,
-  SvgIcon
 } from '@mui/material'
-import NftCard from '@components/NftCard';
-import NextLink from 'next/link'
-import Link from '@components/Link'
-import Logo from '@components/svgs/Logo'
-import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
-import ButtonLink from '@components/ButtonLink'
-import Image from 'next/image';
-import CardSlider from '@components/CardSlider'
-import DiamondIcon from '@components/svgs/DiamondIcon'
-import { recentNfts } from '@components/placeholders/recentNfts'
+import MintSaleInfoStatic from '@components/sales/MintSaleInfoStatic';
+import { GetStaticProps } from 'next';
+import { fetchSaleData } from '@utils/fetchSaleData';
 
-const features = [
-  {
-    icon: <DiamondIcon sx={{ fontSize: '48px' }} />,
-    title: 'Feature 1',
-    content: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse a, risus nec condimen tum volutpat accumsan.',
-  },
-  {
-    icon: <DiamondIcon sx={{ fontSize: '48px' }} />,
-    title: 'Feature 2',
-    content: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse a, risus nec condimen tum volutpat accumsan.',
-  },
-  {
-    icon: <DiamondIcon sx={{ fontSize: '48px' }} />,
-    title: 'Feature 3',
-    content: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse a, risus nec condimen tum volutpat accumsan.',
-  },
-  {
-    title: 'Feature 4',
-    content: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse a, risus nec condimen tum volutpat accumsan.',
-  },
-]
+export const getStaticProps: GetStaticProps = async () => {
+  try {
+    const data = await fetchSaleData();
+    return {
+      props: {
+        data,
+      },
+      revalidate: 120,
+    };
+  } catch (error) {
+    console.error("Failed to fetch sale data:", error);
+    throw new Error(`Failed to fetch sale data: ${error instanceof Error ? error.message : 'unknown error'}`);
+  }
+};
 
-const Home: NextPage = () => {
-  const theme = useTheme()
-  const upSm = useMediaQuery(theme.breakpoints.up('sm'))
+interface HomeProps {
+  data: ISale;
+}
+
+const Home: NextPage<HomeProps> = ({ data }) => {
   return (
     <>
-
-      {/* HERO SECTION */}
-      <Container sx={{ mb: '100px' }}>
-
-      </Container>
+      <Container sx={{ my: '36px' }}>
+        <MintSaleInfoStatic saleData={data} />
+      </Container >
     </>
   )
 }
