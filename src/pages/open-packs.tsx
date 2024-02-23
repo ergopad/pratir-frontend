@@ -21,6 +21,7 @@ import { trpc } from '@server/utils/trpc';
 import { DataGrid, GridColDef } from "@mui/x-data-grid";
 import { fetchMetadataForTokenIds } from '@server/utils/cruxApi';
 import Image from 'next/image';
+import ViewCardsDialog from '@components/dialogs/ViewCardsDialog';
 
 const randomInteger = (min: number, max: number) => {
   return (min + Math.random() * (max - min)).toFixed();
@@ -47,7 +48,8 @@ interface PackRows {
   packName: string;
   image: string;
   status: "FULLFILLED" | "CONFIRMING";
-  action: boolean;
+  // action: boolean;
+  tokens: [string, number][];
 }
 
 interface OpenProps {
@@ -65,8 +67,9 @@ const Open: NextPage<OpenProps> = ({ data }) => {
   const [nftList, setNftList] = useState<any[] | undefined>()
   const [selected, setSelected] = useState<boolean[]>([])
   const [loading, setLoading] = useState(true)
-  const [openedPacks, setOpenedPacks] = useState<IPackTokenHistoryItem[]>([])
   const [rows, setRows] = useState<PackRows[]>([])
+  const [viewCardsOpen, setViewCardsOpen] = useState(false)
+  const [cardsViewed, setCardsViewed] = useState<[string, number][]>([])
 
   const transactionApi = trpc.api.post.useMutation()
   const tokenInfo = trpc.api.getPackTokenMetadata.useMutation()
@@ -81,7 +84,7 @@ const Open: NextPage<OpenProps> = ({ data }) => {
             "limit": 10
           }
         });
-        console.log(res)
+        // console.log(res)
 
         const uniqueTokenIds: string[] = [...new Set(res.filter((item: IPackTokenHistoryItem) => item.packToken !== undefined).map((item) => item.packToken))];
         const tokenData = await tokenInfo.mutateAsync({ tokenIds: uniqueTokenIds })
@@ -92,7 +95,8 @@ const Open: NextPage<OpenProps> = ({ data }) => {
           packName: tokenData.find((token) => token.tokenId === item.packToken)?.metadata.name || '',
           image: tokenData.find((token) => token.tokenId === item.packToken)?.metadata.link || '',
           status: item.status as "FULLFILLED" | "CONFIRMING",
-          action: item.status === "FULLFILLED"
+          // action: item.status === "FULLFILLED",
+          tokens: item.tokensBought
         }));
 
         setRows(transformedRows);
@@ -109,7 +113,7 @@ const Open: NextPage<OpenProps> = ({ data }) => {
             "sales": [process.env.BLITZ_SALE]
           }
         });
-        console.log(res)
+        // console.log(res)
         return res
       } catch (e: any) {
         throw e;
@@ -172,6 +176,12 @@ const Open: NextPage<OpenProps> = ({ data }) => {
 
   const rand = useMemo(() => randomInteger(1, 18), [1, 18]);
 
+  const handleViewCards = (cards: [string, number][]) => {
+
+    setViewCardsOpen(true)
+    setCardsViewed(cards)
+  }
+
   const columns: GridColDef[] = [
     // {
     //   field: "id",
@@ -187,7 +197,7 @@ const Open: NextPage<OpenProps> = ({ data }) => {
     },
     {
       field: "image",
-      headerName: "Image",
+      headerName: "",
       renderCell: (params) => (
         <Box sx={{
           width: '36px',
@@ -205,7 +215,7 @@ const Open: NextPage<OpenProps> = ({ data }) => {
           />}
         </Box>
       ),
-      minWidth: 100,
+      width: 40,
     },
     {
       field: "packName",
@@ -234,7 +244,7 @@ const Open: NextPage<OpenProps> = ({ data }) => {
     {
       field: "status",
       headerName: "Status",
-      width: 220,
+      width: 140,
       renderCell: (params) => {
         const setSeverity = (input: string) => {
           if (input === "CONFIRMING") return "warning";
@@ -243,26 +253,27 @@ const Open: NextPage<OpenProps> = ({ data }) => {
         return (
           <>
             <Alert
+              icon={false}
               sx={{ mb: 0, width: "100%", '&:before': { background: 'none', padding: 0 } }}
               severity={setSeverity(params.value)}
             >
-              {params.value}
+              {params.value === "FULLFILLED" ? 'Opened' : 'Confirming'}
             </Alert>
           </>
         );
       },
     },
     {
-      field: "action",
+      field: "tokens",
       headerName: "Action",
       renderCell: (params) => {
-        if (params.value !== undefined) {
+        if (params.value.length > 0) {
           return (
             <>
               <Button
                 disabled={!params.value}
                 variant="contained"
-                onClick={() => { }}
+                onClick={() => handleViewCards(params.value)}
               >
                 View Cards
               </Button>
@@ -436,7 +447,6 @@ const Open: NextPage<OpenProps> = ({ data }) => {
                 }}
               />
             </Paper>
-
             : <Box sx={{ textAlign: 'center', py: 3 }}>
               <Typography variant="h4" color="text.secondary">
                 You haven&apos;t opened any packs yet.
@@ -463,6 +473,11 @@ const Open: NextPage<OpenProps> = ({ data }) => {
           })}
         />
       }
+      <ViewCardsDialog
+        open={viewCardsOpen}
+        setOpen={setViewCardsOpen}
+        cards={cardsViewed}
+      />
     </>
   )
 }

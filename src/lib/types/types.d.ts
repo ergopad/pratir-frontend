@@ -149,8 +149,8 @@ interface IPackTokenHistoryItem {
   followUpTxId: string;
   tokensBought: [string, number][];
   status: string;
-  created_at: string; // ISO date string, but consider using `Date` type if you're working with date objects
-  updated_at: string; // ISO date string, similar consideration as `created_at`
+  created_at: string;
+  updated_at: string;
 }
 
 interface IRoyalty {
@@ -181,4 +181,10 @@ interface IPackInfo {
   additional_info?: {
     explicit?: string; // binary flag?
   };
+}
+
+interface ICardsViewed {
+  name: string;
+  image: string;
+  description: string;
 }
