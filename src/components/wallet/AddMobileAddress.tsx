@@ -12,6 +12,7 @@ import { WalletContext } from '@contexts/WalletContext';
 import { trpc } from '@server/utils/trpc';
 import { useAlert } from '@contexts/AlertContext';
 import { v4 as uuidv4 } from 'uuid';
+import { getShorterAddress } from '@utils/general';
 
 interface IErgopayProps {
 
@@ -104,9 +105,9 @@ const Ergopay: FC<IErgopayProps> = () => {
       <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
         {walletAddress
           ? (
-            <>
-              Wallet {walletAddress} Connected.
-            </>
+            <Typography sx={{ maxWidth: '100%', wordBreak: 'break-all' }}>
+              Wallet {getShorterAddress(walletAddress, 6)} Connected.
+            </Typography>
           )
           : link ? (
             <>

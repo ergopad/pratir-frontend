@@ -115,7 +115,7 @@ const OpenPacks: FC<IOpenPacksProps> = ({ open, setOpen, packs, saleListData }) 
       }, {});
 
       const tokenArray = Object.entries(tokenIds).map(([tokenId, qty]) => ({ tokenId, qty }));
-
+      // console.log(tokenArray)
       const order = await buildOrder(tokenArray)
 
       if (order.requests.length > 0) {
@@ -123,6 +123,7 @@ const OpenPacks: FC<IOpenPacksProps> = ({ open, setOpen, packs, saleListData }) 
       }
       else {
         addAlert('error', 'Not built correctly');
+        // console.log(order);
       }
     } catch (e: any) {
       addAlert('error', e);
@@ -144,8 +145,9 @@ const OpenPacks: FC<IOpenPacksProps> = ({ open, setOpen, packs, saleListData }) 
         onClose={handleClose}
         aria-labelledby="customized-dialog-title"
         open={open}
-        fullScreen={extraSmall}
+        // fullScreen={extraSmall}
         theme={theme}
+        sx={{ mt: '102px' }}
       >
         <BootstrapDialogTitle id="customized-dialog-title" onClose={handleClose}>
           Open Packs
@@ -181,11 +183,11 @@ const OpenPacks: FC<IOpenPacksProps> = ({ open, setOpen, packs, saleListData }) 
                     <Typography sx={{ fontWeight: '700' }}>
                       {item.name}
                     </Typography>
-                    {item.collection && (
+                    {/* {item.collection && (
                       <Typography>
                         {item.collection}
                       </Typography>
-                    )}
+                    )} */}
                     <Typography>
                       {item.artist}
                     </Typography>

@@ -156,10 +156,12 @@ const MintSaleInfo: FC<{
   // Utility function to calculate price and determine currency
   const getPriceAndCurrency = (pack: IPack) => {
     const isSigUSD = pack.price[0].tokenId === '03faf2cb329f2e90d6d23b58d91bbb6c046aa143261cc21f52fbe2824bfcbf04';
-    const price = isSigUSD
-      ? Number((pack.price[0].amount * 0.01).toFixed(2))
-      : Number((pack.price[0].amount * 0.000000001).toFixed(3));
+    const price = pack.price[0].amount < 0.1 ? pack.price[0].amount : isSigUSD
+      ? Number((pack.price[0].amount * 0.01).toLocaleString(undefined, { maximumFractionDigits: 2 }))
+      : Number((pack.price[0].amount * 0.000000001).toLocaleString(undefined, { maximumFractionDigits: 3 }));
     const currency = isSigUSD ? 'SigUSD' : 'Erg';
+
+    console.log(price)
 
     return { price, currency };
   };

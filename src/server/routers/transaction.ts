@@ -26,11 +26,13 @@ export const transactionRouter = createTRPCRouter({
         const jsonData = { reducedTransaction, address };
         const serializedData = JSON.stringify(jsonData);
         const setTx = await redis.set(verificationId, serializedData, { EX: 3600 });
-        console.log(setTx)
-        return {
-          verificationId,
-          txId
-        };
+        // console.log(setTx)
+        if (setTx) {
+          return {
+            verificationId,
+            txId
+          };
+        }
       } catch (error: unknown) {
         throw mapAxiosErrorToTRPCError(error)
       }
@@ -70,7 +72,7 @@ export const transactionRouter = createTRPCRouter({
       const { transactionId } = input
       const url = `/crux/tx_status/${transactionId}`
       const request = await axios.get((process.env.CRUX_API) + url);
-      console.log(request.data)
+      // console.log(request.data)
       if (request.data.num_confirmations >= 0) {
         return request.data.num_confirmations
       }

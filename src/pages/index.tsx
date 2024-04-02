@@ -28,13 +28,7 @@ interface HomeProps {
 }
 
 const Home: NextPage<HomeProps> = ({ data }) => {
-  return (
-    <>
-      <Container sx={{ my: '36px' }}>
-        <MintSaleInfoStatic saleData={data} />
-      </Container >
-    </>
-  )
+  return <MintSaleInfoStatic saleData={data} />
 }
 
 export default Home

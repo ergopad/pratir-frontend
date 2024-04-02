@@ -53,10 +53,10 @@ const ProcessTransaction: FC<IProcessTransactionProps> = ({
         setSubmitting('submitting');
         try {
           const tx = await getTransaction(order);
-          console.log(tx)
+          // console.log(tx)
           if (tx) {
             if (dAppWallet.connected) {
-              console.log('once')
+              // console.log('once')
               const context = await getErgoWalletContext();
               const signedtx = await context.sign_tx(tx.unsigned.unsignedTransaction);
               const ok = await context.submit_tx(signedtx);
@@ -64,11 +64,13 @@ const ProcessTransaction: FC<IProcessTransactionProps> = ({
               setSuccessTx(ok)
               setSubmitting('success')
             } else {
-              const verification = await mobileTransaction.mutateAsync({
-                reducedTransaction: tx.reducedTransaction,
-                unsignedTransaction: JSON.stringify(tx.unsignedTransaction),
+              const data = {
+                reducedTransaction: tx.unsigned.reducedTransaction,
+                unsignedTransaction: JSON.stringify(tx.unsigned.unsignedTransaction),
                 address: walletAddress
-              });
+              }
+              // console.log(data)
+              const verification = await mobileTransaction.mutateAsync(data);
               if (verification) {
                 setVerificationId(verification.verificationId)
                 setTransactionId(verification.txId)
@@ -122,7 +124,7 @@ const ProcessTransaction: FC<IProcessTransactionProps> = ({
   }, [scanned, verificationId]);
 
   useEffect(() => {
-    if (pollScan.data) {
+    if (pollScan.data === "scanned") {
       setScanned(true)
     }
   }, [pollScan.data]);
@@ -152,7 +154,7 @@ const ProcessTransaction: FC<IProcessTransactionProps> = ({
   }, [stopPolling, scanned]);
 
   useEffect(() => {
-    if (pollComplete.data >= 0) {
+    if (pollComplete.data !== null && pollComplete.data >= 0) {
       setSubmitting('success')
       setSuccessTx(transactionId)
       addAlert('success', `Submitted Transaction: ${transactionId}`);
@@ -200,7 +202,7 @@ const ProcessTransaction: FC<IProcessTransactionProps> = ({
               mb: '12px'
             }}
           >
-            Awaiting your confirmation of the transaction in the dApp connector.
+            Awaiting your confirmation of the transaction.
           </Typography>
         </Box>
       </Collapse>
@@ -209,6 +211,7 @@ const ProcessTransaction: FC<IProcessTransactionProps> = ({
         <Box
           sx={{
             textAlign: 'center',
+            width: '100%'
           }}
         >
           <TaskAltIcon sx={{ fontSize: '120px' }} />

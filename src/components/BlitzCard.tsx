@@ -1,78 +1,58 @@
-import React, { FC, useEffect, useState } from 'react';
-import {
-  Box,
-  Typography,
-  useTheme,
-  Paper,
-  Skeleton
-} from '@mui/material'
-import useResizeObserver from "use-resize-observer";
+import React, { FC, useState, useEffect } from 'react';
+import { Box, Typography, Paper } from '@mui/material';
+import useResizeObserver from 'use-resize-observer';
 
 interface IBlitzCard {
   data: IPackInfo;
 }
 
-function resolveIpfs(url: string): string {
-  const ipfsPrefix = 'ipfs://';
-  if (url.startsWith(ipfsPrefix)) {
-    return url.replace(ipfsPrefix, `https://cloudflare-ipfs.com/ipfs/`);
-  } else if (url.startsWith('http://')) {
-    return 'https://' + url.substring(7);
+const BlitzCard: FC<IBlitzCard> = ({ data }) => {
+  const [imageUrl, setImageUrl] = useState('');
+  const [showDetails, setShowDetails] = useState(false);
+
+  useEffect(() => {
+    setImageUrl(resolveIpfs(data.link));
+  }, [data]);
+
+  // Resolve IPFS link to a usable URL
+  function resolveIpfs(url: string): string {
+    const ipfsPrefix = 'ipfs://';
+    if (url.startsWith(ipfsPrefix)) {
+      return url.replace(ipfsPrefix, `https://cloudflare-ipfs.com/ipfs/`);
+    } else if (url.startsWith('http://')) {
+      return 'https://' + url.substring(7);
+    }
+    return url;
   }
-  return url;
-}
-
-const BlitzCard: FC<IBlitzCard> = ({
-  data
-}) => {
-  const { ref, width = 1 } = useResizeObserver<HTMLDivElement>();
-  const [newWidth, setNewWidth] = useState(300)
-
-  useEffect(() => {
-    setNewWidth(width + 30)
-  }, [width])
-
-  const [imageUrl, setImageUrl] = useState('')
-  useEffect(() => {
-    setImageUrl(resolveIpfs(data.link))
-  }, [data])
 
   return (
-    <>
-      <Paper
-        sx={{
-          maxWidth: '100%',
-          overflow: 'hidden'
-        }}
-      >
-        <Box>
-          <Box ref={ref} sx={{
-            height: `${newWidth}px`,
-            minHeight: '260px',
-            backgroundImage: `url(${imageUrl})`,
-            backgroundSize: "cover",
-            backgroundRepeat: "no-repeat",
-            backgroundPosition: "center center",
-            transition: 'height 70ms linear'
-          }} />
-          <Box sx={{
-            position: 'absolute',
-            bottom: '10%',
-            left: '50%',
-            width: width - (width / 3),
-            transform: 'translateX(-50%)',
-            background: 'rgba(30,35,70,0.8)',
-            zIndex: 2,
-            p: 1,
-            borderRadius: '12px'
-          }}>
-            <Typography>
-              {data.name}
-            </Typography>
-          </Box>
-        </Box>
-      </Paper>
-    </>
+    <Paper
+      sx={{
+        maxWidth: '100%',
+        overflow: 'hidden',
+        cursor: 'pointer',
+        position: 'relative',
+        '&:focus': { outline: 'none' }
+      }}
+      onClick={() => setShowDetails(prev => !prev)}
+    >
+      <Box sx={{
+        paddingTop: 'calc(100% / (1199 / 1831))', // Adjust the aspect ratio here
+        background: `url(${imageUrl}) center center / cover no-repeat`,
+        transition: 'opacity 0.5s ease',
+      }}>
+        {showDetails &&
+          <Box sx={{ position: 'absolute', top: 0, left: 0, background: '#111111', width: '100%', height: '100%', zIndex: 3, overflowY: 'scroll' }}>
+            {<Box sx={{ p: 2 }}>
+              <Typography variant="h6">{data.name}</Typography>
+              <Typography variant="body2">{data.description}</Typography>
+              {data.properties && Object.entries(data.properties).map(([key, value]) => (
+                <Typography key={key} variant="body2">{`${key}: ${value}`}</Typography>
+              ))}
+            </Box>}
+          </Box>}
+      </Box>
+    </Paper>
   );
 };
 

@@ -80,7 +80,7 @@ export const AddWallet = () => {
   const handleWalletChange = (wallet: string | false) => {
     setExpanded(typeof wallet === "string" ? wallet : false);
     if (wallet === "nautilus") dAppConnect("nautilus");
-    if (wallet === "safew") dAppConnect("safew");
+    // if (wallet === "safew") dAppConnect("safew");
     if (wallet === "mobile") setMobileAdd(!mobileAdd);
   };
 
@@ -309,7 +309,7 @@ export const AddWallet = () => {
       <Dialog
         open={addWalletModalOpen}
         onClose={handleClose}
-        fullScreen={fullScreen}
+      // fullScreen={fullScreen}
       >
         <DialogTitle
           sx={{

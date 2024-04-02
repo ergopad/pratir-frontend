@@ -79,14 +79,14 @@ const ConfirmPurchase: FC<IConfirmPurchaseProps> = ({
         onClose={handleClose}
         aria-labelledby="customized-dialog-title"
         open={open}
-        fullScreen={extraSmall}
+        // fullScreen={extraSmall}
         maxWidth={'xs'}
         theme={theme}
       >
         <BootstrapDialogTitle id="customized-dialog-title" onClose={handleClose}>
           Confirm Purchase
         </BootstrapDialogTitle>
-        <DialogContent dividers sx={{ minHeight: '200px' }}>
+        <DialogContent dividers sx={{ minHeight: '200px', width: '100%' }}>
           <Collapse in={!order}>
             <Table
               sx={{

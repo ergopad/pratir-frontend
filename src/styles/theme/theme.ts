@@ -199,7 +199,7 @@ let darkTheme = createTheme({
           '&:before': {
             pointerEvents: 'none',
             inset: 0,
-            zIndex: 2,
+            zIndex: 10,
             background: 'linear-gradient(to right,#a99151 22%,#877036 24%,#ffffcf 26%,#d0b46c 27%,#f2d68d 40%,#a49053 78%)',
             padding: '2px',
             content: '""',

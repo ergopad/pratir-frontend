@@ -9,9 +9,10 @@ interface IViewCardsDialogProps {
   open: boolean;
   setOpen: React.Dispatch<React.SetStateAction<boolean>>;
   cards: [string, number][];
+  packType?: "common" | "uncommon" | "rare";
 }
 
-const ViewCardsDialog: FC<IViewCardsDialogProps> = ({ open, setOpen, cards }) => {
+const ViewCardsDialog: FC<IViewCardsDialogProps> = ({ open, setOpen, cards, packType }) => {
   const getTokenData = trpc.api.getPackTokenMetadata.useMutation();
   const [cardMetadata, setCardMetadata] = useState<{
     tokenId: string;
@@ -34,8 +35,13 @@ const ViewCardsDialog: FC<IViewCardsDialogProps> = ({ open, setOpen, cards }) =>
     }
   }, [cards]);
 
+  const [videoSourceFile, setVideoSourceFile] = useState("/assets/common_website_render.mp4")
+
   // This useEffect is to ensure video visibility is only controlled by the video's end event
   useEffect(() => {
+    if (packType === "common") setVideoSourceFile("/assets/common_website_render.mp4")
+    if (packType === "uncommon") setVideoSourceFile("/assets/uncommon_website_render.mp4")
+    if (packType === "rare") setVideoSourceFile("/assets/rare_website_render.mp4")
     const video = videoRef.current;
     if (video) {
       const handleVideoEnd = () => setShowVideo(false);
@@ -44,48 +50,56 @@ const ViewCardsDialog: FC<IViewCardsDialogProps> = ({ open, setOpen, cards }) =>
       // Clean up the event listener on component unmount
       return () => video.removeEventListener('ended', handleVideoEnd);
     }
-  }, []);
-
-  console.log(cardMetadata)
+  }, [packType]);
 
   return (
     <Dialog
       open={open}
       onClose={() => setOpen(false)}
-      fullScreen
+      maxWidth={false}
       aria-labelledby="view-cards-dialog"
       aria-describedby="view-cards"
       sx={{
-        p: 0,
         '& .MuiPaper-root': {
           // background: 'none',
           lineHeight: 0,
           // borderRadius: '26px'
+          width: '100vw',
+          height: '100%',
+          p: '3px'
         },
         '& .MuiBackdrop-root': {
           backdropFilter: 'blur(5px)',
           backgroundColor: 'rgba(0, 0, 0, 0.5)'
-        }
+        },
+        mt: '102px'
       }}
     >
-      <DialogContent sx={{ p: 0 }}>
+      <DialogContent sx={{
+        p: 0,
+        '@media (min-width: 1536px)': {
+          display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%'
+        }
+      }}>
         <Fade in={showVideo} unmountOnExit>
           <Box
             display="flex"
             justifyContent="center"
             alignItems="center"
-            height="100%"
             sx={{
-              position: 'fixed',
-              width: '100vw',
-              height: '100vh',
+              position: 'absolute',
+              width: 'calc(100% - 6px)',
+              height: 'calc(100% - 6px)',
               p: 0,
               m: 0,
-              zIndex: 5,
+              left: '3px',
+              top: '3px',
+              zIndex: 11,
+              overflow: 'none',
               background: 'black',
               '& video': {
                 maxWidth: '100%',
-                maxHeight: '100vh',
+                maxHeight: '100%',
                 width: 'auto',
                 height: 'auto',
                 objectFit: 'contain'
@@ -94,7 +108,7 @@ const ViewCardsDialog: FC<IViewCardsDialogProps> = ({ open, setOpen, cards }) =>
             onClick={() => setShowVideo(false)}
           >
             <video ref={videoRef} autoPlay onEnded={() => setShowVideo(false)}>
-              <source src="/assets/common_website_render.mp4" type="video/mp4" />
+              <source src={videoSourceFile} type="video/mp4" />
               Your browser does not support the video tag.
             </video>
           </Box>
@@ -111,14 +125,19 @@ const ViewCardsDialog: FC<IViewCardsDialogProps> = ({ open, setOpen, cards }) =>
         >
           <CloseIcon />
         </IconButton>
-        <Box sx={{ p: 3 }}>
+        <Box sx={{
+          p: 3, width: '100%',
+          '@media (min-width: 1536px)': {
+            display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%'
+          }
+        }}>
           {loading
             ? <Box>
               <CircularProgress />
             </Box>
             : <Grid container spacing={2} justifyContent="center">
               {cardMetadata.map((card, i) => (
-                <Grid xs={12} sm={6} md={4} key={i}>
+                <Grid xs={12} sm={6} md={4} xl key={i}>
                   <Box sx={{ maxWidth: '400px', margin: 'auto' }}>
                     <BlitzCard data={card.metadata} />
                   </Box>

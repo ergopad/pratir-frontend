@@ -41,7 +41,7 @@ const AlertComponent = () => {
   };
 
   return (
-    <Box sx={{ position: 'fixed', top: 0, right: 0, margin: 2, zIndex: 9999 }}>
+    <Box sx={{ position: 'fixed', bottom: 0, right: 0, margin: 2, zIndex: 9999, paddingBottom: 'max(env(safe-area-inset-bottom), 24px)' }}>
       <TransitionGroup>
         {alerts.map((alert) => (
           <Transition
