@@ -15,7 +15,7 @@ interface IProcessTransactionProps {
 }
 
 const ProcessTransaction: FC<IProcessTransactionProps> = ({
-  order,
+  order
 }) => {
   const {
     walletAddress,
@@ -158,6 +158,7 @@ const ProcessTransaction: FC<IProcessTransactionProps> = ({
       setSubmitting('success')
       setSuccessTx(transactionId)
       addAlert('success', `Submitted Transaction: ${transactionId}`);
+
       setStopPolling(true);
     }
   }, [pollComplete.data]);

@@ -2,7 +2,7 @@ import React, { FC, useState, useContext } from 'react';
 import DialogContent from '@mui/material/DialogContent';
 import DialogActions from '@mui/material/DialogActions';
 import Typography from '@mui/material/Typography';
-import Image from 'next/image';
+import Image from 'next/legacy/image'
 import {
   Box,
   useTheme,
@@ -14,7 +14,7 @@ import Grid2 from '@mui/material/Unstable_Grid2';
 import { WalletContext } from '@contexts/WalletContext';
 import { useAlert } from '@contexts/AlertContext';
 import { BootstrapDialog, BootstrapDialogTitle } from '@components/StyledComponents/BootstrapDialog';
-import ProcessTransaction from '@components/ProcessTransaction';
+import ProcessPackOpening from '@components/ProcessPackOpening';
 
 interface IOpenPacksProps {
   open: boolean;
@@ -27,6 +27,8 @@ interface IOpenPacksProps {
     tokenId: string;
   }[]
   saleListData: ISale[];
+  setPackList: React.Dispatch<React.SetStateAction<IPackListItem[] | undefined>>;
+  setSelectedPacks: React.Dispatch<React.SetStateAction<boolean[]>>;
 }
 
 interface IToken {
@@ -53,7 +55,7 @@ const findObjectByTokenId = (array: ISale[], tokenId: string) => {
   return null;
 }
 
-const OpenPacks: FC<IOpenPacksProps> = ({ open, setOpen, packs, saleListData }) => {
+const OpenPacks: FC<IOpenPacksProps> = ({ open, setOpen, packs, saleListData, setPackList, setSelectedPacks }) => {
   const {
     walletAddress,
     dAppWallet
@@ -137,7 +139,7 @@ const OpenPacks: FC<IOpenPacksProps> = ({ open, setOpen, packs, saleListData }) 
   };
 
   const theme = useTheme()
-  const extraSmall = useMediaQuery(theme.breakpoints.down('sm'))
+  // const extraSmall = useMediaQuery(theme.breakpoints.down('sm'))
 
   return (
     <>
@@ -197,8 +199,10 @@ const OpenPacks: FC<IOpenPacksProps> = ({ open, setOpen, packs, saleListData }) 
             })}
           </Collapse>
           <Collapse in={!!order} mountOnEnter unmountOnExit>
-            <ProcessTransaction
+            <ProcessPackOpening
               order={order}
+              setPackList={setPackList}
+              setSelectedPacks={setSelectedPacks}
             />
           </Collapse>
         </DialogContent>

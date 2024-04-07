@@ -20,7 +20,7 @@ import { fetchAllSaleData } from '@utils/fetchSaleData';
 import { trpc } from '@server/utils/trpc';
 import { DataGrid, GridColDef } from "@mui/x-data-grid";
 import { fetchMetadataForTokenIds } from '@server/utils/cruxApi';
-import Image from 'next/image';
+import Image from 'next/legacy/image'
 import ViewCardsDialog from '@components/dialogs/ViewCardsDialog';
 
 const randomInteger = (min: number, max: number) => {
@@ -67,10 +67,7 @@ const Open: NextPage<OpenProps> = ({ data }) => {
     setAddWalletModalOpen,
     dAppWallet
   } = useContext(WalletContext);
-  const [nftList, setNftList] = useState<{
-    tokenId: string;
-    metadata: IPackInfo;
-  }[] | undefined>()
+  const [nftList, setNftList] = useState<IPackListItem[] | undefined>()
   const [selected, setSelected] = useState<boolean[]>([])
   const [loading, setLoading] = useState(true)
   const [pageLoading, setPageLoading] = useState(true)
@@ -83,7 +80,6 @@ const Open: NextPage<OpenProps> = ({ data }) => {
     page: 0,
   });
   const [numberRows, setNumberRows] = useState(0)
-
 
   interface HistoryResponse {
     total: number;
@@ -110,12 +106,12 @@ const Open: NextPage<OpenProps> = ({ data }) => {
           "limit": limit
         }
 
-        console.log(body)
+        // console.log(body)
         const res: HistoryResponse = await transactionApi.mutateAsync({
           url: "/order/history", body
         });
 
-        console.log(res)
+        // console.log(res)
 
         const uniqueTokenIds: string[] = [...new Set(res.items.filter((item: IPackTokenHistoryItem) => item.packToken !== undefined).map((item) => item.packToken))];
         const tokenData = await tokenInfo.mutateAsync({ tokenIds: uniqueTokenIds })
@@ -433,10 +429,7 @@ const Open: NextPage<OpenProps> = ({ data }) => {
                 spacing={2}
                 columns={{ xs: 2, sm: 3, md: 4, lg: 5, xl: 6 }}
               >
-                {nftList.map((item: {
-                  tokenId: string;
-                  metadata: IPackInfo;
-                }, i: number) => {
+                {nftList.map((item: IPackListItem, i: number) => {
                   return (
                     <Grid key={i} item xs={1}>
                       <NftCardV2
@@ -533,6 +526,8 @@ const Open: NextPage<OpenProps> = ({ data }) => {
           open={confirmationOpen}
           setOpen={setConfirmationOpen}
           saleListData={data}
+          setPackList={setNftList}
+          setSelectedPacks={setSelected}
           packs={nftList.filter((_item, i) => selected[i] === true).map((item) => {
             const data = item.metadata
             return (

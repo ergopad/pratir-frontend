@@ -1,4 +1,4 @@
-import { Box, CircularProgress, Dialog, DialogContent, DialogTitle, Fade, IconButton, Typography } from '@mui/material';
+import { Box, CircularProgress, Dialog, DialogContent, DialogTitle, Fade, IconButton, Typography, useTheme } from '@mui/material';
 import React, { FC, useEffect, useRef, useState } from 'react';
 import CloseIcon from '@mui/icons-material/Close';
 import { trpc } from '@server/utils/trpc';
@@ -13,6 +13,7 @@ interface IViewCardsDialogProps {
 }
 
 const ViewCardsDialog: FC<IViewCardsDialogProps> = ({ open, setOpen, cards, packType }) => {
+  const theme = useTheme()
   const getTokenData = trpc.api.getPackTokenMetadata.useMutation();
   const [cardMetadata, setCardMetadata] = useState<{
     tokenId: string;
@@ -145,6 +146,9 @@ const ViewCardsDialog: FC<IViewCardsDialogProps> = ({ open, setOpen, cards, pack
               ))}
             </Grid>
           }
+        </Box>
+        <Box sx={{ textAlign: 'center', p: 2 }}>
+          <Typography>To self-validate card token rarity spreads, you can review the <a href="https://tinyurl.com/blitz-tcg-rarity-validation" target="_blank" style={{ color: theme.palette.primary.main }}>pack opening test metrics</a>.</Typography>
         </Box>
       </DialogContent>
     </Dialog>

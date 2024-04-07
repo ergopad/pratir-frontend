@@ -90,6 +90,9 @@ const NftCardV2: FC<INftCardCard> = ({
             "scale3d(0.95, 0.95, 1)" :
             "scale3d(1, 1, 1)",
           transition: "transform 0.15s ease-in-out",
+          '&:hover': {
+            cursor: 'pointer'
+          }
         }}
       >
         <Box

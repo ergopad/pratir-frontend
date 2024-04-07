@@ -188,3 +188,8 @@ interface ICardsViewed {
   image: string;
   description: string;
 }
+
+interface IPackListItem {
+  tokenId: string;
+  metadata: IPackInfo;
+}
