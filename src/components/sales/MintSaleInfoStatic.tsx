@@ -20,6 +20,7 @@ import DirectSalesCard from '@components/token/DirectSalesCard';
 import PackTokenSelector from '@components/token/PackTokenSelector';
 import { formatNumber } from '@lib/utilities/general';
 import UserMenu from '@components/user/UserMenu';
+import { resolveIpfs } from '@utils/assets';
 
 
 // Packs or no packs? 
@@ -214,7 +215,7 @@ const MintSaleInfoStatic: FC<{
           >
             {featuredImage &&
               <img
-                src={featuredImage}
+                src={resolveIpfs(featuredImage)}
                 height='100%'
                 width='100%'
                 style={{

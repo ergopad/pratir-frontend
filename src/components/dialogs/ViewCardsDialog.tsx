@@ -128,9 +128,9 @@ const ViewCardsDialog: FC<IViewCardsDialogProps> = ({ open, setOpen, cards, pack
         </IconButton>
         <Box sx={{
           p: 3, width: '100%',
-          '@media (min-width: 1536px)': {
-            display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%'
-          }
+          // '@media (min-width: 1536px)': {
+          //   display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%'
+          // }
         }}>
           {loading
             ? <Box>
@@ -146,9 +146,6 @@ const ViewCardsDialog: FC<IViewCardsDialogProps> = ({ open, setOpen, cards, pack
               ))}
             </Grid>
           }
-        </Box>
-        <Box sx={{ textAlign: 'center', p: 2 }}>
-          <Typography>To self-validate card token rarity spreads, you can review the <a href="https://tinyurl.com/blitz-tcg-rarity-validation" target="_blank" style={{ color: theme.palette.primary.main }}>pack opening test metrics</a>.</Typography>
         </Box>
       </DialogContent>
     </Dialog>

@@ -15,6 +15,7 @@ import { timeFromNow } from '@lib/utilities/daytime'
 import CalendarTodayIcon from "@mui/icons-material/CalendarToday";
 import Link from '@components/Link'
 import { formatNumber } from '@lib/utilities/general';
+import { resolveIpfs } from '@utils/assets';
 
 export interface IPackTokenSelector {
   packInfo: {
@@ -84,7 +85,7 @@ const PackTokenSelector: FC<IPackTokenSelector> = ({
           <Avatar
             variant="rounded"
             alt={packInfo.name}
-            src={packInfo.image}
+            src={resolveIpfs(packInfo.image)}
             sx={{ width: 48, height: 48 }}
           />
         </Grid>

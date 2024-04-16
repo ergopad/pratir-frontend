@@ -3,7 +3,6 @@ import type { GetStaticProps, NextPage } from 'next';
 import {
   Grid,
   Button,
-  Container,
   Typography,
   Box,
   CircularProgress,
@@ -14,14 +13,13 @@ import { useTheme } from "@mui/material/styles";
 import OpenPacks from '@components/dialogs/OpenPacks';
 import { WalletContext } from '@contexts/WalletContext';
 import NftCardV2 from '@components/NftCardV2';
-import { getWalletList, tokenListInfo } from "@lib/utilities/assetsNew";
 import UserMenu from '@components/user/UserMenu';
 import { fetchAllSaleData } from '@utils/fetchSaleData';
 import { trpc } from '@server/utils/trpc';
 import { DataGrid, GridColDef } from "@mui/x-data-grid";
-import { fetchMetadataForTokenIds } from '@server/utils/cruxApi';
 import Image from 'next/legacy/image'
 import ViewCardsDialog from '@components/dialogs/ViewCardsDialog';
+import { resolveIpfs } from '@utils/assets';
 
 const randomInteger = (min: number, max: number) => {
   return (min + Math.random() * (max - min)).toFixed();
@@ -41,6 +39,13 @@ export const getStaticProps: GetStaticProps = async () => {
     throw new Error(`Failed to fetch sale data: ${error instanceof Error ? error.message : 'unknown error'}`);
   }
 };
+
+interface ApiResponse {
+  saleId: string;
+  packId: string;
+  packToken: string;
+  amount: number;
+}
 
 interface PackRows {
   id: string;
@@ -114,8 +119,9 @@ const Open: NextPage<OpenProps> = ({ data }) => {
         // console.log(res)
 
         const uniqueTokenIds: string[] = [...new Set(res.items.filter((item: IPackTokenHistoryItem) => item.packToken !== undefined).map((item) => item.packToken))];
+        // console.log(uniqueTokenIds)
         const tokenData = await tokenInfo.mutateAsync({ tokenIds: uniqueTokenIds })
-
+        console.log(tokenData)
         setNumberRows(res.total)
 
         const rarityKeywords = ['Common', 'Uncommon', 'Rare'];
@@ -146,12 +152,13 @@ const Open: NextPage<OpenProps> = ({ data }) => {
               }
             }
           });
-        console.log(transformedRows)
+        // console.log(transformedRows)
         setRows(transformedRows);
         setPageLoading(false)
         return res
       } catch (e: any) {
-        throw e;
+        setPageLoading(false)
+        console.log(e);
       }
     };
 
@@ -167,7 +174,7 @@ const Open: NextPage<OpenProps> = ({ data }) => {
         });
 
         const packTokensDetails = await tokenInfo.mutateAsync({
-          tokenIds: res.map((pack: Pack) => pack.packToken)
+          tokenIds: res.filter((token: ApiResponse) => token.saleId === process.env.BLITZ_SALE).map((pack: Pack) => pack.packToken)
         });
 
         // console.log(packTokensDetails)
@@ -274,7 +281,7 @@ const Open: NextPage<OpenProps> = ({ data }) => {
           mx: 'auto'
         }}>
           {params.value && <Image
-            src={params.value}
+            src={resolveIpfs(params.value)}
             layout="fill"
             alt="nft-image"
             style={{ objectFit: 'cover' }}
@@ -443,7 +450,7 @@ const Open: NextPage<OpenProps> = ({ data }) => {
                 })}
               </Grid>
               : <Box sx={{ textAlign: 'center', py: 3 }}>
-                <Typography variant="h4" color="text.secondary">
+                <Typography variant="h6" color="text.secondary">
                   You don&apos;t have any unopened packs.
                 </Typography>
               </Box>
@@ -521,6 +528,9 @@ const Open: NextPage<OpenProps> = ({ data }) => {
             </Typography>
           </Box>
         }</Box>
+      <Box sx={{ textAlign: 'center', p: 2 }}>
+        <Typography>To self-validate card token rarity spreads, you can review the <a href="https://tinyurl.com/blitz-tcg-rarity-validation" target="_blank" style={{ color: theme.palette.primary.main }}>pack opening test metrics</a>.</Typography>
+      </Box>
       {nftList &&
         <OpenPacks
           open={confirmationOpen}
@@ -535,7 +545,7 @@ const Open: NextPage<OpenProps> = ({ data }) => {
                 name: data.name,
                 collection: data.collection ? data.collection : undefined,
                 artist: '', // need to implement getArtist()
-                imgUrl: data.link ? data.link : `/images/placeholder/${rand}.jpg`,
+                imgUrl: data.link ? resolveIpfs(data.link) : `/images/placeholder/${rand}.jpg`,
                 tokenId: item.tokenId
               }
             )
