@@ -529,7 +529,7 @@ const Open: NextPage<OpenProps> = ({ data }) => {
           </Box>
         }</Box>
       <Box sx={{ textAlign: 'center', p: 2 }}>
-        <Typography>To self-validate card token rarity spreads, you can review the <a href="https://tinyurl.com/blitz-tcg-rarity-validation" target="_blank" style={{ color: theme.palette.primary.main }}>pack opening test metrics</a>.</Typography>
+        <Typography>To self-validate card token rarity spreads, you can review the <a href="https://tinyurl.com/blitz-tcg-rarity-validation" target="_blank" rel="noreferrer" style={{ color: theme.palette.primary.main }}>pack opening test metrics</a>.</Typography>
       </Box>
       {nftList &&
         <OpenPacks
