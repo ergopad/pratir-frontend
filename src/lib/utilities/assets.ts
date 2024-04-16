@@ -1,4 +1,4 @@
-import axios from 'axios'
+import axios from 'axios';
 
 export interface IAssetList {
   assets: IToken[],
@@ -347,4 +347,20 @@ export async function getTokenData(tokenId: string) {
     }
   })
   return tokenObject
+}
+
+export const extractTokenIds = (sale: ISale): string[] => {
+  const tokenIds = new Set<string>();
+
+  sale.packs.forEach(pack => {
+    pack.price.forEach(price => {
+      tokenIds.add(price.tokenId);
+    });
+
+    pack.derivedPrice.forEach(derived => {
+      tokenIds.add(derived.tokenId);
+    });
+  });
+
+  return Array.from(tokenIds);
 }

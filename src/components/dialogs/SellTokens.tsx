@@ -8,7 +8,7 @@ import DialogActions from '@mui/material/DialogActions';
 import IconButton from '@mui/material/IconButton';
 import CloseIcon from '@mui/icons-material/Close';
 import Typography from '@mui/material/Typography';
-import Image from 'next/image';
+import Image from 'next/legacy/image'
 import Link from '@components/Link';
 import CircularProgress from '@mui/material/CircularProgress';
 import {
@@ -320,29 +320,29 @@ const SellTokens: FC<ISellTokensProps> = ({ open, setOpen, tokens }) => {
                     spacing={1}
                   >
                     <Grid2 xs={12}>
-                    <TextField
-                      fullWidth
-                      variant="filled"
-                      id="sale-name"
-                      label="Sale Name"
-                      name="saleName"
-                      value={saleData[i]?.saleName ? saleData[i].saleName : ''}
-                      onChange={(e) => handleChange(e, i)}
-                    />
-                  </Grid2>
-                  <Grid2 xs={12}>
-                    <TextField
-                      fullWidth
-                      variant="filled"
-                      id="sale-description"
-                      label="Sale Description"
-                      name="saleDescription"
-                      multiline
-                      minRows={3}
-                      value={saleData[i]?.saleDescription ? saleData[i].saleDescription : ''}
-                      onChange={(e) => handleChange(e, i)}
-                    />
-                  </Grid2>
+                      <TextField
+                        fullWidth
+                        variant="filled"
+                        id="sale-name"
+                        label="Sale Name"
+                        name="saleName"
+                        value={saleData[i]?.saleName ? saleData[i].saleName : ''}
+                        onChange={(e) => handleChange(e, i)}
+                      />
+                    </Grid2>
+                    <Grid2 xs={12}>
+                      <TextField
+                        fullWidth
+                        variant="filled"
+                        id="sale-description"
+                        label="Sale Description"
+                        name="saleDescription"
+                        multiline
+                        minRows={3}
+                        value={saleData[i]?.saleDescription ? saleData[i].saleDescription : ''}
+                        onChange={(e) => handleChange(e, i)}
+                      />
+                    </Grid2>
                     <Grid2 xs={7}>
                       <TextField
                         fullWidth

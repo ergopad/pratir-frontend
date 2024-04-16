@@ -12,6 +12,7 @@ import { WalletContext } from '@contexts/WalletContext';
 import { trpc } from '@server/utils/trpc';
 import { useAlert } from '@contexts/AlertContext';
 import { v4 as uuidv4 } from 'uuid';
+import { getShorterAddress } from '@utils/general';
 
 interface IErgopayProps {
 
@@ -77,11 +78,26 @@ const Ergopay: FC<IErgopayProps> = () => {
   }, [pollVerify.data]);
 
   const copyToClipboard = (link: string) => {
-    navigator.clipboard.writeText(link).then(() => {
-      addAlert('success', 'Link copied to clipboard!');
-    }).catch(err => {
-      addAlert('error', `Failed to copy link: ${err}`);
-    });
+    if (navigator.clipboard) {
+      navigator.clipboard.writeText(link).then(() => {
+        addAlert('success', 'Link copied to clipboard!');
+      }).catch(err => {
+        addAlert('error', `Failed to copy link: ${err}`);
+      });
+    } else {
+      // Fallback using document.execCommand (less reliable and secure)
+      try {
+        const textarea = document.createElement('textarea');
+        textarea.value = link;
+        document.body.appendChild(textarea);
+        textarea.select();
+        document.execCommand('copy');
+        document.body.removeChild(textarea);
+        addAlert('success', 'Link copied to clipboard!');
+      } catch (err) {
+        addAlert('error', `Failed to copy link: ${err}`);
+      }
+    }
   };
 
   return (
@@ -89,9 +105,9 @@ const Ergopay: FC<IErgopayProps> = () => {
       <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
         {walletAddress
           ? (
-            <>
-              Wallet {walletAddress} Connected.
-            </>
+            <Typography sx={{ maxWidth: '100%', wordBreak: 'break-all' }}>
+              Wallet {getShorterAddress(walletAddress, 6)} Connected.
+            </Typography>
           )
           : link ? (
             <>

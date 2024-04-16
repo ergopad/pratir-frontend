@@ -14,7 +14,6 @@ import {
 } from '@mui/material'
 import NumberIncrement from '@components/forms/NumberIncrement';
 import ConfirmPurchase from '@components/dialogs/ConfirmPurchase';
-import { IDerivedPrice } from '@components/sales/MintSaleInfo';
 import { WalletContext } from '@contexts/WalletContext';
 
 export interface IDirectSalesCardProps {
@@ -73,6 +72,8 @@ const DirectSalesCard: FC<IDirectSalesCardProps> = (props) => {
   })
   useEffect(() => {
     const erg = derivedPrices.flat().find(dp => dp.tokenId === "0000000000000000000000000000000000000000000000000000000000000000")?.amount
+      ? derivedPrices.flat().find(dp => dp.tokenId === "0000000000000000000000000000000000000000000000000000000000000000")?.amount
+      : currency === 'Erg' ? price : undefined
     const blitz = derivedPrices.flat().find(dp => dp.tokenId === "BLITZTOKENID")?.amount
     setAvailablePrices({
       erg, blitz
@@ -87,7 +88,7 @@ const DirectSalesCard: FC<IDirectSalesCardProps> = (props) => {
     }
     else if (buyCurrency === 'erg') {
       if (availablePrices.erg) {
-        setTotalPrice(Number((numberSold * availablePrices.erg * 0.000000001).toFixed(2)))
+        setTotalPrice(Number((numberSold * availablePrices.erg * 0.000000001).toLocaleString(undefined, { maximumFractionDigits: 2 })))
         setPurchaseCurrency('Erg')
         setConfirmationOpen(true)
       }
@@ -97,7 +98,7 @@ const DirectSalesCard: FC<IDirectSalesCardProps> = (props) => {
     }
     else if (buyCurrency === 'blitz') {
       if (availablePrices.blitz) {
-        setTotalPrice(Number((numberSold * availablePrices.blitz).toFixed(2)))
+        setTotalPrice(Number((numberSold * availablePrices.blitz).toLocaleString(undefined, { maximumFractionDigits: 2 })))
         setPurchaseCurrency('Blitz')
         setConfirmationOpen(true)
       }
@@ -113,7 +114,7 @@ const DirectSalesCard: FC<IDirectSalesCardProps> = (props) => {
         <CardContent>
           {/* <Card sx={{ background: 'none', border: 'none', p: 0 }}>
         <CardContent sx={{ p: 0 }}> */}
-          {price === 0 || status !== "LIVE" ? (
+          {status !== "LIVE" ? (
             <Typography>
               Not currently for sale
             </Typography>
@@ -143,7 +144,7 @@ const DirectSalesCard: FC<IDirectSalesCardProps> = (props) => {
                         lineHeight: 1.3
                       }}
                     >
-                      ${(price * numberSold).toFixed(2)}
+                      ${(price * numberSold).toLocaleString(undefined, { maximumFractionDigits: 2 })}
                     </Typography>
                   </Box>
                 </Grid>

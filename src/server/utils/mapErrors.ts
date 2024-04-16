@@ -21,9 +21,9 @@ export const mapAxiosErrorToTRPCError = (error: any): TRPCError => {
       }
     };
 
-    console.log(error.response?.status)
-    console.log(error.response?.data)
-    console.log(code(error.response?.status))
+    // console.log(error.response?.status)
+    // console.log(error.response?.data)
+    // console.log(code(error.response?.status))
     return new TRPCError({
       message: error.response?.data as string,
       code: code(error.response?.status),

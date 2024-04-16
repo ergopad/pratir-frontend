@@ -1,72 +1,20 @@
-import React, { FC, useState, useContext, useEffect } from 'react';
-import Button from '@mui/material/Button';
-import { styled } from '@mui/material/styles';
-import Dialog from '@mui/material/Dialog';
-import DialogTitle from '@mui/material/DialogTitle';
+import React, { FC, useState, useContext } from 'react';
 import DialogContent from '@mui/material/DialogContent';
 import DialogActions from '@mui/material/DialogActions';
-import IconButton from '@mui/material/IconButton';
-import CloseIcon from '@mui/icons-material/Close';
 import Typography from '@mui/material/Typography';
-import Image from 'next/image';
-import Link from '@components/Link';
-import CircularProgress from '@mui/material/CircularProgress';
+import Image from 'next/legacy/image'
 import {
   Box,
   useTheme,
   useMediaQuery,
+  Collapse,
+  Button,
 } from '@mui/material';
 import Grid2 from '@mui/material/Unstable_Grid2';
-import TaskAltIcon from '@mui/icons-material/TaskAlt';
-import CancelOutlinedIcon from '@mui/icons-material/CancelOutlined';
-import { getErgoWalletContext } from "@components/wallet/AddWallet";
 import { WalletContext } from '@contexts/WalletContext';
-import { IOrderRequests, IOrder } from '@components/dialogs/ConfirmPurchase';
 import { useAlert } from '@contexts/AlertContext';
-import { trpc } from '@server/utils/trpc';
-
-const BootstrapDialog = styled(Dialog)(({ theme }) => ({
-  '& .MuiDialogContent-root': {
-    padding: theme.spacing(2),
-    maxWidth: '440px',
-    minWidth: '350px',
-    border: 'none',
-    margin: 'auto'
-  },
-  '& .MuiDialogActions-root': {
-    padding: theme.spacing(2),
-  },
-}));
-
-export interface DialogTitleProps {
-  id: string;
-  children?: React.ReactNode;
-  onClose: () => void;
-}
-
-function BootstrapDialogTitle(props: DialogTitleProps) {
-  const { children, onClose, ...other } = props;
-
-  return (
-    <DialogTitle sx={{ m: 0, p: 2 }} {...other}>
-      {children}
-      {onClose ? (
-        <IconButton
-          aria-label="close"
-          onClick={onClose}
-          sx={{
-            position: 'absolute',
-            right: 8,
-            top: 8,
-            color: (theme) => theme.palette.grey[500],
-          }}
-        >
-          <CloseIcon />
-        </IconButton>
-      ) : null}
-    </DialogTitle>
-  );
-}
+import { BootstrapDialog, BootstrapDialogTitle } from '@components/StyledComponents/BootstrapDialog';
+import ProcessPackOpening from '@components/ProcessPackOpening';
 
 interface IOpenPacksProps {
   open: boolean;
@@ -78,6 +26,9 @@ interface IOpenPacksProps {
     imgUrl: string;
     tokenId: string;
   }[]
+  saleListData: ISale[];
+  setPackList: React.Dispatch<React.SetStateAction<IPackListItem[] | undefined>>;
+  setSelectedPacks: React.Dispatch<React.SetStateAction<boolean[]>>;
 }
 
 interface IToken {
@@ -85,7 +36,7 @@ interface IToken {
   qty: number;
 }
 
-const findObjectByTokenId = (array: any[], tokenId: string) => {
+const findObjectByTokenId = (array: ISale[], tokenId: string) => {
   for (let i = 0; i < array.length; i++) {
     const obj = array[i];
     for (let j = 0; j < obj.packs.length; j++) {
@@ -101,31 +52,25 @@ const findObjectByTokenId = (array: any[], tokenId: string) => {
       }
     }
   }
-  return null; // return null if tokenId is not found in any object
+  return null;
 }
 
-const OpenPacks: FC<IOpenPacksProps> = ({ open, setOpen, packs }) => {
-  const [submitting, setSubmitting] = useState<"submitting" | "success" | "failed" | undefined>(undefined)
+const OpenPacks: FC<IOpenPacksProps> = ({ open, setOpen, packs, saleListData, setPackList, setSelectedPacks }) => {
   const {
     walletAddress,
-    setAddWalletModalOpen,
     dAppWallet
   } = useContext(WalletContext);
   const { addAlert } = useAlert();
-  const getSaleList = trpc.api.get.useQuery(
-    { url: "/sale" }
-  )
+  const [order, setOrder] = useState<IOrder | undefined>(undefined)
 
   const buildOrder = async (tokenIdArray: IToken[]): Promise<IOrder> => {
     const fetchSaleData = async (tokenIds: IToken[]): Promise<IOrderRequests[]> => {
-      const saleList = getSaleList.data
+      const saleList = saleListData
       const orderRequests: IOrderRequests[] = [];
-
       tokenIds.forEach((tokenIdObj) => {
         const tokenId = tokenIdObj.tokenId;
         const count = tokenIdObj.qty;
-        const sale = findObjectByTokenId(saleList.data, tokenId)
-
+        const sale = findObjectByTokenId(saleList, tokenId)
         if (sale) {
           const saleId = sale.saleId;
           let orderRequest = orderRequests.find((request) => request.saleId === saleId);
@@ -139,43 +84,28 @@ const OpenPacks: FC<IOpenPacksProps> = ({ open, setOpen, packs }) => {
           orderRequest.packRequests.push({
             packId: sale.packId,
             count: count,
-            currencyTokenId: ''
+            currencyTokenId: tokenId
           });
         }
       });
-      console.log(orderRequests)
       return orderRequests;
     }
-    if (getSaleList.isFetched) {
-      const reduceSaleList = await fetchSaleData(tokenIdArray);
-      let walletArray = []
-      if (dAppWallet.connected === true) {
-        walletArray = dAppWallet.addresses
-      }
-      else walletArray = [walletAddress]
-      return {
-        targetAddress: walletArray[0],
-        userWallet: walletArray,
-        txType: "EIP-12",
-        requests: reduceSaleList
-      }
-    } else throw new Error
+    const reduceSaleList = await fetchSaleData(tokenIdArray);
+    let walletArray = []
+    if (dAppWallet.connected === true) {
+      walletArray = dAppWallet.addresses
+    }
+    else walletArray = [walletAddress]
+    return {
+      targetAddress: walletArray[0],
+      userWallet: walletArray,
+      txType: "EIP-12",
+      requests: reduceSaleList
+    }
+
   }
 
-  const openTxApi = trpc.api.post.useMutation()
-
-  const getOpenTx = async (order: IOrder) => {
-    try {
-      const res = await openTxApi.mutateAsync({ url: `/order`, body: order });
-      addAlert('success', "Open order sent");
-      return res.data;
-    } catch (e: any) {
-      addAlert('error', e.message);
-    }
-  };
-
   const submit = async () => {
-    setSubmitting('submitting');
     try {
       const tokenIds = packs.reduce((accumulator: { [key: string]: number }, current) => {
         if (current.tokenId in accumulator) {
@@ -185,106 +115,47 @@ const OpenPacks: FC<IOpenPacksProps> = ({ open, setOpen, packs }) => {
         }
         return accumulator;
       }, {});
-      const tokenArray = Object.entries(tokenIds).map(([tokenId, qty]) => ({ tokenId, qty }));
 
+      const tokenArray = Object.entries(tokenIds).map(([tokenId, qty]) => ({ tokenId, qty }));
+      // console.log(tokenArray)
       const order = await buildOrder(tokenArray)
+
       if (order.requests.length > 0) {
-        const tx = await getOpenTx(order);
-        const context = await getErgoWalletContext();
-        const signedtx = await context.sign_tx(tx);
-        const ok = await context.submit_tx(signedtx);
-        addAlert('success', `Submitted Transaction: ${ok}`);
-        setSubmitting('success')
+        setOrder(order)
       }
       else {
         addAlert('error', 'Not built correctly');
-        setSubmitting('failed')
+        // console.log(order);
       }
-
     } catch (e: any) {
       addAlert('error', e);
-      setSubmitting('failed')
       console.error(e);
     }
   }
 
   const handleClose = () => {
-    setSubmitting(undefined)
+    setOrder(undefined)
     setOpen(false);
   };
 
-  const switchTitle = (param: string | undefined) => {
-    switch (param) {
-      case "submitting":
-        return 'Awaiting Confirmation';
-      case "success":
-        return 'Success';
-      case "failed":
-        return 'Transaction Failed';
-      default:
-        return 'Open Packs';
-    }
-  }
+  const theme = useTheme()
+  // const extraSmall = useMediaQuery(theme.breakpoints.down('sm'))
 
-  const switchContent = (param: string | undefined) => {
-    switch (param) {
-      case "submitting":
-        return (
-          <Box
-            sx={{
-              textAlign: 'center',
-            }}
-          >
-            <CircularProgress size={120} thickness={1} sx={{ mb: '12px' }} />
-            <Typography
-              sx={{
-                fontWeight: '600',
-                mb: '12px'
-              }}
-            >
-              Awaiting your confirmation of the transaction in the dApp connector.
-            </Typography>
-          </Box>
-        )
-      case "success":
-        return (
-          <Box
-            sx={{
-              textAlign: 'center',
-            }}
-          >
-            <TaskAltIcon sx={{ fontSize: '120px' }} />
-            <Typography
-              sx={{
-                fontWeight: '600',
-                mb: '12px'
-              }}
-            >
-              Transaction succeeded.
-            </Typography>
-          </Box>
-        )
-      case "failed":
-        return (
-          <Box
-            sx={{
-              textAlign: 'center',
-            }}
-          >
-            <CancelOutlinedIcon sx={{ fontSize: '120px' }} />
-            <Typography
-              sx={{
-                fontWeight: '600',
-                mb: '12px'
-              }}
-            >
-              Transaction failed, please try again.
-            </Typography>
-          </Box>
-        )
-      default:
-        return (
-          <>
+  return (
+    <>
+      <BootstrapDialog
+        onClose={handleClose}
+        aria-labelledby="customized-dialog-title"
+        open={open}
+        // fullScreen={extraSmall}
+        theme={theme}
+        sx={{ mt: '102px' }}
+      >
+        <BootstrapDialogTitle id="customized-dialog-title" onClose={handleClose}>
+          Open Packs
+        </BootstrapDialogTitle>
+        <DialogContent dividers>
+          <Collapse in={!order}>
             {packs.map((item, i) => {
               return (
                 <Grid2
@@ -301,25 +172,24 @@ const OpenPacks: FC<IOpenPacksProps> = ({ open, setOpen, packs }) => {
                   key={i}
                 >
                   <Grid2 xs="auto">
-                    <Image
-                      src={item.imgUrl}
-                      layout="fixed"
-                      width={48}
-                      height={48}
-                      alt="nft-image"
-                      sizes="48px"
-                      objectFit="cover"
-                    />
+                    <div style={{ width: '48px', height: '48px', overflow: 'hidden', display: 'inline-block', position: 'relative' }}>
+                      <Image
+                        src={item.imgUrl}
+                        layout="fill"
+                        alt="nft-image"
+                        style={{ objectFit: 'cover' }}
+                      />
+                    </div>
                   </Grid2>
                   <Grid2 xs>
                     <Typography sx={{ fontWeight: '700' }}>
                       {item.name}
                     </Typography>
-                    {item.collection && (
+                    {/* {item.collection && (
                       <Typography>
                         {item.collection}
                       </Typography>
-                    )}
+                    )} */}
                     <Typography>
                       {item.artist}
                     </Typography>
@@ -327,32 +197,25 @@ const OpenPacks: FC<IOpenPacksProps> = ({ open, setOpen, packs }) => {
                 </Grid2>
               )
             })}
-          </>
-        )
-    }
-  }
-
-  const theme = useTheme()
-  const extraSmall = useMediaQuery(theme.breakpoints.down('sm'))
-
-  return (
-    <>
-      <BootstrapDialog
-        onClose={handleClose}
-        aria-labelledby="customized-dialog-title"
-        open={open}
-        fullScreen={extraSmall}
-      >
-        <BootstrapDialogTitle id="customized-dialog-title" onClose={handleClose}>
-          {switchTitle(submitting)}
-        </BootstrapDialogTitle>
-        <DialogContent dividers>
-          {switchContent(submitting)}
+          </Collapse>
+          <Collapse in={!!order} mountOnEnter unmountOnExit>
+            <ProcessPackOpening
+              order={order}
+              setPackList={setPackList}
+              setSelectedPacks={setSelectedPacks}
+            />
+          </Collapse>
         </DialogContent>
         <DialogActions sx={{
-          display: !submitting ? 'block' : 'none'
+          display: !order ? 'block' : 'none'
         }}>
-          <Button autoFocus fullWidth onClick={submit} variant="contained">
+          <Button
+            autoFocus
+            fullWidth
+            onClick={submit}
+            variant="contained"
+          // loading={!getSaleList.isFetched}
+          >
             Confirm Open
           </Button>
         </DialogActions>

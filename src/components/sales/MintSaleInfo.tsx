@@ -1,5 +1,4 @@
-import React, { FC, useState, useEffect, useContext } from 'react';
-import { useRouter } from 'next/router';
+import React, { FC, useState, useEffect } from 'react';
 import {
   Typography,
   Box,
@@ -18,111 +17,10 @@ import {
 } from '@mui/material'
 import Grid from '@mui/system/Unstable_Grid/Grid';
 import DirectSalesCard from '@components/token/DirectSalesCard';
-import dayjs from 'dayjs';
 import PackTokenSelector from '@components/token/PackTokenSelector';
 import { formatNumber } from '@lib/utilities/general';
 import UserMenu from '@components/user/UserMenu';
 import { trpc } from '@server/utils/trpc';
-
-interface ISale {
-  id: string;
-  name: string;
-  description: string;
-  startTime: string;
-  endTime: string;
-  sellerWallet: string;
-  saleWallet: string;
-  packs: IPack[];
-  collection?: ICollection;
-  artist?: IArtist;
-  status: string;
-}
-
-export interface IDerivedPrice {
-  amount: number;
-  derivedFrom: string;
-  packId: string;
-  tokenId: string;
-}
-
-interface IPack {
-  id: string;
-  name: string;
-  image: string;
-  price: IPrice[];
-  derivedPrice: IDerivedPrice[];
-  content: IContent[];
-  soldOut: boolean;
-}
-
-interface IPrice {
-  id: string;
-  tokenId: string;
-  amount: number;
-  packId: string;
-}
-
-interface IContent {
-  id: string;
-  rarity: IRarity[];
-  amount: number;
-  packId: string;
-}
-
-interface IRarity {
-  odds: number;
-  rarity: string;
-}
-
-interface ICollection {
-  id: string;
-  artistId: string;
-  name: string;
-  tokenId: string | null;
-  description: string;
-  bannerImageUrl: string;
-  featuredImageUrl: string;
-  collectionLogoUrl: string;
-  category: string;
-  mintingExpiry: number;
-  rarities: {
-    image: string;
-    rarity: string;
-    description: string;
-  }[];
-  availableTraits: {
-    max?: number;
-    tpe: string;
-    name: string;
-    image: string;
-    description: string;
-  }[];
-  saleId: string;
-  status: string;
-  mintingTxId: string | null;
-  createdAt: string;
-  updatedAt: string;
-}
-
-interface IArtist {
-  id: string;
-  address: string;
-  name: string;
-  website: string;
-  tagline: string;
-  avatarUrl: string;
-  bannerUrl: string;
-  social: {
-    url: string;
-    socialNetwork: string;
-  }[];
-  createdAt: string;
-  updatedAt: string;
-}
-
-interface ICollectionData {
-
-}
 
 // Packs or no packs? 
 //    a) If packs, are there more than one pack type? 
@@ -258,10 +156,12 @@ const MintSaleInfo: FC<{
   // Utility function to calculate price and determine currency
   const getPriceAndCurrency = (pack: IPack) => {
     const isSigUSD = pack.price[0].tokenId === '03faf2cb329f2e90d6d23b58d91bbb6c046aa143261cc21f52fbe2824bfcbf04';
-    const price = isSigUSD
-      ? Number((pack.price[0].amount * 0.01).toFixed(2))
-      : Number((pack.price[0].amount * 0.000000001).toFixed(3));
+    const price = pack.price[0].amount < 0.1 ? pack.price[0].amount : isSigUSD
+      ? Number((pack.price[0].amount * 0.01).toLocaleString(undefined, { maximumFractionDigits: 2 }))
+      : Number((pack.price[0].amount * 0.000000001).toLocaleString(undefined, { maximumFractionDigits: 3 }));
     const currency = isSigUSD ? 'SigUSD' : 'Erg';
+
+    console.log(price)
 
     return { price, currency };
   };
@@ -413,74 +313,6 @@ const MintSaleInfo: FC<{
 
         </Grid>
         <Grid md={6} xs={12}>
-          <Card sx={{ mb: 2 }}>
-            <CardContent sx={{ pb: '8px!important', zIndex: 2 }}>
-              {apiGetSaleById.collection && (
-                <Grid container justifyContent="space-between" sx={{ mb: 1 }}>
-                  <Grid>
-                    <Typography sx={boldTextSx}>
-                      Collection:
-                    </Typography>
-                  </Grid>
-                  <Grid>
-                    <Typography color="text.secondary" sx={textSx}>
-                      <Link href={'/collections/' + apiGetSaleById.collection.id}>
-                        {apiGetSaleById.collection.name}
-                      </Link>
-                    </Typography>
-                  </Grid>
-                </Grid>
-              )}
-              {apiGetSaleById.artist && (
-                <Grid container justifyContent="space-between" sx={{ mb: 1, }}>
-                  <Grid xs="auto" sx={{ pr: 3 }}>
-                    <Typography sx={boldTextSx}>
-                      Artist:
-                    </Typography>
-                  </Grid>
-                  <Grid xs>
-                    <Typography color="text.secondary" sx={{ ...textSx, textAlign: 'right' }} noWrap>
-                      <Link href={'/users/' + apiGetSaleById.artist.address}>
-                        {apiGetSaleById.artist.address}
-                      </Link>
-                    </Typography>
-                  </Grid>
-                </Grid>
-              )}
-              {apiGetSaleById.startTime && (
-                <Grid container justifyContent="space-between" sx={{ mb: 1 }}>
-                  <Grid>
-                    <Typography sx={boldTextSx}>
-                      Sale Start:
-                    </Typography>
-                  </Grid>
-                  <Grid>
-                    <Typography color="text.secondary" sx={textSx}>
-                      {dayjs(apiGetSaleById?.startTime).toString()}
-                    </Typography>
-                  </Grid>
-                </Grid>
-              )}
-              {apiGetSaleById.endTime && (
-                <Grid container justifyContent="space-between" sx={{ mb: 1 }}>
-                  <Grid>
-                    <Typography sx={boldTextSx}>
-                      Sale End:
-                    </Typography>
-                  </Grid>
-                  <Grid>
-                    <Typography color="text.secondary" sx={textSx}>
-                      {dayjs(apiGetSaleById?.endTime).toString()}
-                    </Typography>
-                  </Grid>
-                </Grid>
-              )}
-
-            </CardContent>
-          </Card>
-
-
-
           {apiGetSaleById !== undefined && apiGetSaleById.packs.length > 3 && (
             <>
               <Paper sx={{ mb: 2, p: 2 }}>

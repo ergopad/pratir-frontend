@@ -17,7 +17,7 @@ import {
   Avatar,
   CircularProgress,
 } from "@mui/material";
-import Image from "next/image";
+import Image from 'next/legacy/image'
 import { bytesToSize, aspectRatioResize } from "@lib/utilities/general";
 import DeleteIcon from "@mui/icons-material/Delete";
 import axios from "axios";
