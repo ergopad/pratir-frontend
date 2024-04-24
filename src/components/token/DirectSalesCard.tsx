@@ -199,7 +199,7 @@ const DirectSalesCard: FC<IDirectSalesCardProps> = (props) => {
                         variant="outlined"
                         disabled={soldOut || !availablePrices.erg}
                       >
-                        Buy with Erg
+                        Buy with ERG
                       </Button>
                     </Grid>
                     <Grid item xs={12} sm={6}>
@@ -220,7 +220,7 @@ const DirectSalesCard: FC<IDirectSalesCardProps> = (props) => {
                     disabled={soldOut || !availablePrices.blitz}
                     variant="contained"
                   >
-                    Buy with Blitz (10% Discount)
+                    Buy with BLTZ (10% Discount)
                   </Button>
                 </>}
 

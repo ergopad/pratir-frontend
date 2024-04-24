@@ -78,6 +78,7 @@ const ViewCardsDialog: FC<IViewCardsDialogProps> = ({ open, setOpen, cards, pack
     >
       <DialogContent sx={{
         p: 0,
+        maxWidth: '2400px',
         '@media (min-width: 1536px)': {
           display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%'
         }
