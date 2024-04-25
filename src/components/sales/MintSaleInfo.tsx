@@ -317,7 +317,7 @@ const MintSaleInfo: FC<{
             <>
               <Paper sx={{ mb: 2, p: 2 }}>
                 <Typography variant="h5">
-                  Choose a pack
+                  Choose a Pack
                 </Typography>
                 {apiGetSaleById.packs.filter((_item, i) => i % 3 === 0).map((item, i) => {
                   const packIndex = i * 3
