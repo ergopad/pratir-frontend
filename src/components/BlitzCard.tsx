@@ -23,7 +23,7 @@ const BlitzCard: FC<IBlitzCard> = ({ data }) => {
   function resolveIpfs(url: string): string {
     const ipfsPrefix = 'ipfs://';
     if (url.startsWith(ipfsPrefix)) {
-      return url.replace(ipfsPrefix, `https://cloudflare-ipfs.com/ipfs/`);
+      return url.replace(ipfsPrefix, `https://blitztcg.myfilebase.com/ipfs/`);
     } else if (url.startsWith('http://')) {
       return 'https://' + url.substring(7);
     }
