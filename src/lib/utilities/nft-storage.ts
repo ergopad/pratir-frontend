@@ -1,8 +1,8 @@
 // Import the NFTStorage class and File constructor from the 'nft.storage' package
 import { NFTStorage } from 'nft.storage'
 
-import axios from 'axios'
 import { IFileData } from '@components/forms/FileUploadAreaIpfs'
+import axios from 'axios'
 
 // Paste your NFT.Storage API key into the quotes:
 const NFT_STORAGE_KEY = process.env.NFT_STORAGE_KEY
@@ -40,7 +40,7 @@ export const ipfsUpload = async (fileData: IFileData, onProgress: (progressEvent
     );
 
     const url = res.data.url;
-    const ipfs = res.data.url.replace("https://cloudflare-ipfs.com/ipfs/", "ipfs://");
+    const ipfs = res.data.url.replace("https://blitztcg.myfilebase.com/ipfs/", "ipfs://");
     onProgress({ ...newProgressEvent, loaded: 100, total: 100 });
 
     return { url, ipfs }

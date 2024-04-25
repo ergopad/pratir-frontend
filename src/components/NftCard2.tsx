@@ -90,7 +90,7 @@ const NftCardCard: FC<INftCardCard> = ({
       const url = nftData.imgUrl
       if (!url.startsWith(ipfsPrefix) && url.startsWith('http://')) setImageUrl('https://' + url.substring(7))
       else if (!url.startsWith(ipfsPrefix)) setImageUrl(url)
-      else setImageUrl(url.replace(ipfsPrefix, `https://cloudflare-ipfs.com/ipfs/`))
+      else setImageUrl(url.replace(ipfsPrefix, `https://blitztcg.myfilebase.com/ipfs/`))
     }
     else if (nftData.imgUrl) setImageUrl(nftData.imgUrl)
     else setImageUrl('')
