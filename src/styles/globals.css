@@ -25,7 +25,7 @@ a, a:hover {
   cursor: url(/assets/Cursor_02-2_select.png), pointer !important;
 }
 
-button, a, label[for], input[type="button"], input[type="submit"], .MuiButtonBase-root, .MuiCheckbox-root, .custom-pointer {
+button, a, label[for], input[type="button"], input[type="submit"], .MuiButtonBase-root, .MuiCheckbox-root, .MuiDataGrid-columnHeader--sortable, .custom-pointer {
   cursor: url(/assets/Cursor_02-2_select.png), pointer !important;
 }
 

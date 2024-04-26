@@ -163,6 +163,7 @@ function toUtf8String(hex: string) {
   return str;
 }
 
+
 export function resolveIpfs(url: string) {
   const ipfsPrefix = 'ipfs://';
   if (!url.startsWith(ipfsPrefix) && url.startsWith('http://')) return 'https://' + url.substring(7);
