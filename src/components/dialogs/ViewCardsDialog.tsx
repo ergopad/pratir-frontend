@@ -66,6 +66,7 @@ const ViewCardsDialog: FC<IViewCardsDialogProps> = ({ open, setOpen, cards, pack
           lineHeight: 0,
           // borderRadius: '26px'
           width: '100vw',
+          maxWidth: '2400px',
           height: '100%',
           p: '3px'
         },
@@ -128,7 +129,7 @@ const ViewCardsDialog: FC<IViewCardsDialogProps> = ({ open, setOpen, cards, pack
           <CloseIcon />
         </IconButton>
         <Box sx={{
-          p: 3, width: '100%',
+          p: 3, width: '100%'
           // '@media (min-width: 1536px)': {
           //   display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%'
           // }
