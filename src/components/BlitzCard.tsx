@@ -1,7 +1,6 @@
 import React, { FC, useState, useEffect } from 'react';
 import { Box, Typography, Paper, Fade } from '@mui/material';
 import useResizeObserver from 'use-resize-observer';
-import { resolveIpfs } from '@utils/assets';
 
 interface IBlitzCard {
   data: IPackInfo;
@@ -20,6 +19,17 @@ const BlitzCard: FC<IBlitzCard> = ({ data }) => {
     audio.play();
   };
 
+  // Resolve IPFS link to a usable URL
+  function resolveIpfs(url: string): string {
+    const ipfsPrefix = 'ipfs://';
+    if (url.startsWith(ipfsPrefix)) {
+      return url.replace(ipfsPrefix, `https://blitztcg.myfilebase.com/ipfs/`);
+    } else if (url.startsWith('http://')) {
+      return 'https://' + url.substring(7);
+    }
+    return url;
+  }
+
   return (
     <Box
       sx={{
@@ -37,7 +47,7 @@ const BlitzCard: FC<IBlitzCard> = ({ data }) => {
     >
       <Box sx={{
         paddingTop: 'calc(100% / (1199 / 1831))', // Adjust the aspect ratio here
-        background: `url('assets/card-back.png') center center / cover no-repeat`,
+        background: showDetails ? '#000' : `url('assets/card-back.png') center center / cover no-repeat`,
         transition: 'opacity 0.5s ease',
       }}>
         <Fade in={showDetails} timeout={{ enter: 1000, exit: 200 }}>
