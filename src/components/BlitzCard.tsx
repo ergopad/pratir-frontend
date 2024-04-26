@@ -35,10 +35,11 @@ const BlitzCard: FC<IBlitzCard> = ({ data }) => {
       sx={{
         maxWidth: '100%',
         overflow: 'hidden',
-        cursor: 'pointer',
+        // cursor: 'pointer',
         position: 'relative',
         '&:focus': { outline: 'none' }
       }}
+      className="custom-pointer"
       onClick={() => {
         setShowDetails(prev => !prev)
         if (!showDetails) playSound()

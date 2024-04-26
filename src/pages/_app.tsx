@@ -11,7 +11,7 @@ import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { trpc } from "@server/utils/trpc"
 import { AlertProvider } from "@contexts/AlertContext";
 import AlertComponent from "@components/AlertComponent";
-import { Container } from "@mui/material";
+import { Container, GlobalStyles } from "@mui/material";
 
 function MyApp({ Component, pageProps }: AppProps) {
   const [walletAddress, setWalletAddress] = useState("");
