@@ -1,6 +1,7 @@
 import React, { FC, useState, useEffect } from 'react';
 import { Box, Typography, Paper, Fade } from '@mui/material';
 import useResizeObserver from 'use-resize-observer';
+import { resolveIpfs } from '@utils/assets';
 
 interface IBlitzCard {
   data: IPackInfo;
@@ -18,17 +19,6 @@ const BlitzCard: FC<IBlitzCard> = ({ data }) => {
   const playSound = () => {
     audio.play();
   };
-
-  // Resolve IPFS link to a usable URL
-  function resolveIpfs(url: string): string {
-    const ipfsPrefix = 'ipfs://';
-    if (url.startsWith(ipfsPrefix)) {
-      return url.replace(ipfsPrefix, `https://blitztcg.myfilebase.com/ipfs/`);
-    } else if (url.startsWith('http://')) {
-      return 'https://' + url.substring(7);
-    }
-    return url;
-  }
 
   return (
     <Box
