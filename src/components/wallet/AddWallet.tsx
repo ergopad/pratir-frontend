@@ -374,7 +374,7 @@ export const AddWallet = () => {
                           color: "text.secondary",
                           fontWeight: "400",
                         }}
-                        className="custom-cursor"
+                        className="custom-pointer"
                       >
                         {props.name}
                       </Typography>
@@ -384,7 +384,7 @@ export const AddWallet = () => {
                           color: "text.secondary",
                           fontWeight: "400",
                         }}
-                        className="custom-cursor"
+                        className="custom-pointer"
                       >
                         {props.description}
                       </Typography>
