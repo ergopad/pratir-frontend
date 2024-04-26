@@ -165,7 +165,7 @@ const DirectSalesCard: FC<IDirectSalesCardProps> = (props) => {
               </Grid>
               {openNow !== undefined && setOpenNow !== undefined && (
                 <FormGroup sx={{ mb: '12px' }}>
-                  <FormControlLabel control={
+                  <FormControlLabel className="custom-pointer" control={
                     <Checkbox
                       checked={openNow}
                       onChange={() => setOpenNow(prevState => !prevState)}

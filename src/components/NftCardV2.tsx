@@ -81,6 +81,7 @@ const NftCardV2: FC<INftCardCard> = ({
   return (
     <>
       <Paper
+        className="custom-pointer"
         sx={{
           maxWidth: '100%',
           backgroundColor: selected !== undefined && index !== undefined && selected[index] ?
@@ -90,9 +91,9 @@ const NftCardV2: FC<INftCardCard> = ({
             "scale3d(0.95, 0.95, 1)" :
             "scale3d(1, 1, 1)",
           transition: "transform 0.15s ease-in-out",
-          '&:hover': {
-            cursor: 'pointer'
-          }
+          // '&:hover': {
+          //   cursor: 'pointer'
+          // }
         }}
       >
         <Box

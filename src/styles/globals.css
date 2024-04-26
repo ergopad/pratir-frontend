@@ -9,14 +9,26 @@ body {
   overflow-y: overlay;
   overflow-x: hidden;
   height: 100%;
-  /* cursor: url(/assets/Cursor_02.png), auto !important; */
+  cursor: url(/assets/Cursor_02.png), auto !important;
 }
 
 a {
   color: inherit;
   text-decoration: none;
-  /* cursor: url(/assets/Cursor_02-2_select.png), url(/assets/Cursor_02-2_select.png), auto !important; */
 }
+
+p, li, h1, h2, h3, h4, h5, h6, textarea, input[type="text"], label {
+  cursor: url(/assets/Cursor_02-2_text.png), text;
+}
+
+a, a:hover {
+  cursor: url(/assets/Cursor_02-2_select.png), pointer !important;
+}
+
+button, a, label[for], input[type="button"], input[type="submit"], .MuiButtonBase-root, .MuiCheckbox-root, .custom-pointer {
+  cursor: url(/assets/Cursor_02-2_select.png), pointer !important;
+}
+
 
 * {
   box-sizing: border-box;

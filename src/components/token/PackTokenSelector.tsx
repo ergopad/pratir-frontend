@@ -59,6 +59,7 @@ const PackTokenSelector: FC<IPackTokenSelector> = ({
     <Paper
       onClick={() => handleSelect()}
       variant="outlined"
+      className="custom-pointer"
       sx={{
         p: '12px',
         mb: '12px',
@@ -69,7 +70,7 @@ const PackTokenSelector: FC<IPackTokenSelector> = ({
         //   "scale3d(0.95, 0.95, 1)" :
         //   "scale3d(1, 1, 1)",
         transition: "transform 0.15s ease-in-out",
-        cursor: 'pointer',
+        // cursor: 'pointer',
         '&:before': {
           p: '1px'
         }
@@ -92,12 +93,12 @@ const PackTokenSelector: FC<IPackTokenSelector> = ({
         <Grid item xs>
           <Grid container alignItems="center" spacing={2}>
             <Grid item xs>
-              <Typography variant="h5" sx={{ mb: 0 }}>
+              <Typography variant="h5" sx={{ mb: 0 }} className="custom-pointer">
                 {packInfo.name}
               </Typography>
             </Grid>
             <Grid item xs="auto">
-              <Typography variant="h5" sx={{ mb: 0 }}>
+              <Typography variant="h5" sx={{ mb: 0 }} className="custom-pointer">
                 {packInfo.price[0].tokenId === '0000000000000000000000000000000000000000000000000000000000000000' ?
                   (
                     <>
