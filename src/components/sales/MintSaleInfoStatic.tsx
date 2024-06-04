@@ -220,11 +220,11 @@ const MintSaleInfoStatic: FC<{
             {featuredImage &&
               <img
                 src={
-                  salesProps.packId === "97b5802a-4ed6-4ab4-8882-4d326a0f35de"
+                  salesProps.tokenName.includes("Common Pack 1st Ed Base")
                     ? '/assets/Packs_Common.png'
-                    : salesProps.packId === "bbe8fe7f-f3b0-4c71-b171-ae06e3777c8c"
+                    : salesProps.tokenName.includes("Uncommon Pack 1st Ed Base")
                       ? '/assets/Packs_Uncommon.png'
-                      : salesProps.packId === "0533e5f6-294f-4a16-b215-017f96f031e3"
+                      : salesProps.tokenName.includes("Rare Pack 1st Ed Base")
                         ? '/assets/Packs_Rare.png'
                         : resolveIpfs(featuredImage)
                 }
