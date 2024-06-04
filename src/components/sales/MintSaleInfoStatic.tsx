@@ -178,6 +178,10 @@ const MintSaleInfoStatic: FC<{
     }
   }, [selected, saleData, openNow]);
 
+  useEffect(() => {
+    console.log(salesProps)
+  }, [salesProps])
+
   return (
     <>
       <Box sx={{
@@ -215,7 +219,15 @@ const MintSaleInfoStatic: FC<{
           >
             {featuredImage &&
               <img
-                src={resolveIpfs(featuredImage)}
+                src={
+                  salesProps.tokenName.includes("Common Pack 1st Ed Base")
+                    ? '/assets/Packs_Common.png'
+                    : salesProps.tokenName.includes("Uncommon Pack 1st Ed Base")
+                      ? '/assets/Packs_Uncommon.png'
+                      : salesProps.tokenName.includes("Rare Pack 1st Ed Base")
+                        ? '/assets/Packs_Rare.png'
+                        : resolveIpfs(featuredImage)
+                }
                 height='100%'
                 width='100%'
                 style={{
