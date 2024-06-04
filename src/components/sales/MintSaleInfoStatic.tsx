@@ -178,6 +178,10 @@ const MintSaleInfoStatic: FC<{
     }
   }, [selected, saleData, openNow]);
 
+  useEffect(() => {
+    console.log(salesProps)
+  }, [salesProps])
+
   return (
     <>
       <Box sx={{
