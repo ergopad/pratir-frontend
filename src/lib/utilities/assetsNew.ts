@@ -1,26 +1,25 @@
-import axios from 'axios';
+import axios from "axios";
 
 export interface IAssetList {
-  assets: IToken[],
-  audioNfts: IToken[],
-  imgNfts: IToken[],
+  assets: IToken[];
+  audioNfts: IToken[];
+  imgNfts: IToken[];
 }
 
 interface IBalances {
   addresses: {
     [key: string]: {
       balance: number;
-      tokens:
-      {
+      tokens: {
         tokenId: string;
         amount: number;
         decimals: number;
         name: string;
         tokenType: string;
         price: number;
-      }[]
-    }
-  },
+      }[];
+    };
+  };
   total: number;
   price: number;
 }
@@ -37,16 +36,21 @@ export interface IToken {
   id: string;
   amount?: number;
   amountUSD?: number;
-  bx?: { address: string; txId: string | undefined; outputTransactionId: string; }
+  bx?: {
+    address: string;
+    txId: string | undefined;
+    outputTransactionId: string;
+  };
   type?: string;
   remainingVest?: number;
 }
 
 export function resolveIpfs(url: string) {
-  const ipfsPrefix = 'ipfs://';
-  if (!url.startsWith(ipfsPrefix) && url.startsWith('http://')) return 'https://' + url.substring(7);
+  const ipfsPrefix = "ipfs://";
+  if (!url.startsWith(ipfsPrefix) && url.startsWith("http://"))
+    return "https://" + url.substring(7);
   else if (!url.startsWith(ipfsPrefix)) return url;
-  else return url.replace(ipfsPrefix, `https://cloudflare-ipfs.com/ipfs/`);
+  else return url.replace(ipfsPrefix, `https://ipfs.io/ipfs/`);
 }
 
 const reduceBalances = (balances: IBalances) => {
@@ -64,7 +68,7 @@ const reduceBalances = (balances: IBalances) => {
         tokenType: string;
         price: number;
       }[];
-      price: number
+      price: number;
     } = {
       balance: 0,
       tokens: [],
@@ -85,7 +89,7 @@ const reduceBalances = (balances: IBalances) => {
         name: string;
         tokenType: string;
         price: number;
-      }
+      };
     } = {};
     Object.keys(balances.addresses).forEach((address) => {
       const tokens = balances.addresses[address].tokens ?? [];
@@ -122,12 +126,9 @@ const generateAssetInfoStorageKey = (id: string) => {
   return `token_info_${id}_81151`;
 };
 
-const setAssetInfo = (id: string, res: { data: any; }) => {
+const setAssetInfo = (id: string, res: { data: any }) => {
   if (res?.data) {
-    localStorage.setItem(
-      generateAssetInfoStorageKey(id),
-      JSON.stringify(res)
-    );
+    localStorage.setItem(generateAssetInfoStorageKey(id), JSON.stringify(res));
   }
 };
 
@@ -140,13 +141,15 @@ interface IWalletListToken {
   tokenType: string;
 }
 
-export const getWalletList = async (addresses: string[]): Promise<IWalletListToken[] | []> => {
+export const getWalletList = async (
+  addresses: string[]
+): Promise<IWalletListToken[] | []> => {
   const balances = await axios
     .post(`${process.env.ERGOPAD_API}/asset/balances/`, {
       addresses: addresses,
     })
     .catch((err) => {
-      console.log('ERROR FETCHING: ', err);
+      console.log("ERROR FETCHING: ", err);
       return {
         data: {},
       };
@@ -154,29 +157,29 @@ export const getWalletList = async (addresses: string[]): Promise<IWalletListTok
   // console.log(balances.data)
   const balance = reduceBalances(balances.data);
   if (balance) {
-    return balance.tokens
-  }
-
-  else return []
-}
+    return balance.tokens;
+  } else return [];
+};
 
 export const tokenListInfo = async (tokens: any[]) => {
   // create list of assets
-  const initialAssetList = await Promise.all(tokens.map(async (item, i) => {
-    const res = await getAssetInfo(item.tokenId);
-    if (res?.data) {
-      setAssetInfo(item.tokenId, res)
-      return {
-        ...item,
-        description: res.data.description,
-        type: res.data.nftType,
-        artist: res.data.minterAddress,
-        imgUrl: res.data.extraMetaData?.link,
-        collection: res.data.extraMetaData?.standard2Data?.collection?.name,
-        loading: false
+  const initialAssetList = await Promise.all(
+    tokens.map(async (item, i) => {
+      const res = await getAssetInfo(item.tokenId);
+      if (res?.data) {
+        setAssetInfo(item.tokenId, res);
+        return {
+          ...item,
+          description: res.data.description,
+          type: res.data.nftType,
+          artist: res.data.minterAddress,
+          imgUrl: res.data.extraMetaData?.link,
+          collection: res.data.extraMetaData?.standard2Data?.collection?.name,
+          loading: false,
+        };
       }
-    }
-    return item;
-  }));
-  return initialAssetList
-}
+      return item;
+    })
+  );
+  return initialAssetList;
+};
