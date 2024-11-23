@@ -1,5 +1,5 @@
-import React, { useState, useContext, useMemo, useEffect } from 'react';
-import type { GetStaticProps, NextPage } from 'next';
+import React, { useState, useContext, useMemo, useEffect } from "react";
+import type { GetStaticProps, NextPage } from "next";
 import {
   Grid,
   Button,
@@ -7,19 +7,19 @@ import {
   Box,
   CircularProgress,
   Paper,
-  Alert
+  Alert,
 } from "@mui/material";
 import { useTheme } from "@mui/material/styles";
-import OpenPacks from '@components/dialogs/OpenPacks';
-import { WalletContext } from '@contexts/WalletContext';
-import NftCardV2 from '@components/NftCardV2';
-import UserMenu from '@components/user/UserMenu';
-import { fetchAllSaleData } from '@utils/fetchSaleData';
-import { trpc } from '@server/utils/trpc';
+import OpenPacks from "@components/dialogs/OpenPacks";
+import { WalletContext } from "@contexts/WalletContext";
+import NftCardV2 from "@components/NftCardV2";
+import UserMenu from "@components/user/UserMenu";
+import { fetchAllSaleData } from "@utils/fetchSaleData";
+import { trpc } from "@server/utils/trpc";
 import { DataGrid, GridColDef } from "@mui/x-data-grid";
-import Image from 'next/legacy/image'
-import ViewCardsDialog from '@components/dialogs/ViewCardsDialog';
-import { resolveIpfs } from '@utils/assets';
+import Image from "next/legacy/image";
+import ViewCardsDialog from "@components/dialogs/ViewCardsDialog";
+import { resolveIpfs } from "@utils/assets";
 
 const randomInteger = (min: number, max: number) => {
   return (min + Math.random() * (max - min)).toFixed();
@@ -36,7 +36,11 @@ export const getStaticProps: GetStaticProps = async () => {
     };
   } catch (error) {
     console.error("Failed to fetch sale data:", error);
-    throw new Error(`Failed to fetch sale data: ${error instanceof Error ? error.message : 'unknown error'}`);
+    throw new Error(
+      `Failed to fetch sale data: ${
+        error instanceof Error ? error.message : "unknown error"
+      }`
+    );
   }
 };
 
@@ -55,8 +59,8 @@ interface PackRows {
   status: "FULLFILLED" | "CONFIRMING" | "REFUNDED";
   // action: boolean;
   tokens: {
-    list: [string, number][],
-    packType: "common" | "uncommon" | "rare"
+    list: [string, number][];
+    packType: "common" | "uncommon" | "rare";
   };
 }
 
@@ -66,33 +70,32 @@ interface OpenProps {
 
 const Open: NextPage<OpenProps> = ({ data }) => {
   const theme = useTheme();
-  const [confirmationOpen, setConfirmationOpen] = useState(false)
-  const {
-    walletAddress,
-    setAddWalletModalOpen,
-    dAppWallet
-  } = useContext(WalletContext);
-  const [nftList, setNftList] = useState<IPackListItem[] | undefined>()
-  const [selected, setSelected] = useState<boolean[]>([])
-  const [loading, setLoading] = useState(true)
-  const [pageLoading, setPageLoading] = useState(true)
-  const [rows, setRows] = useState<PackRows[]>([])
-  const [viewCardsOpen, setViewCardsOpen] = useState(false)
-  const [cardsViewed, setCardsViewed] = useState<[string, number][]>([])
-  const [selectedPackType, setSelectedPackType] = useState<"common" | "uncommon" | "rare">('common')
+  const [confirmationOpen, setConfirmationOpen] = useState(false);
+  const { walletAddress, setAddWalletModalOpen, dAppWallet } =
+    useContext(WalletContext);
+  const [nftList, setNftList] = useState<IPackListItem[] | undefined>();
+  const [selected, setSelected] = useState<boolean[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [pageLoading, setPageLoading] = useState(true);
+  const [rows, setRows] = useState<PackRows[]>([]);
+  const [viewCardsOpen, setViewCardsOpen] = useState(false);
+  const [cardsViewed, setCardsViewed] = useState<[string, number][]>([]);
+  const [selectedPackType, setSelectedPackType] = useState<
+    "common" | "uncommon" | "rare"
+  >("common");
   const [paginationModel, setPaginationModel] = useState({
     pageSize: 25,
     page: 0,
   });
-  const [numberRows, setNumberRows] = useState(0)
+  const [numberRows, setNumberRows] = useState(0);
 
   interface HistoryResponse {
     total: number;
-    items: IPackTokenHistoryItem[]
+    items: IPackTokenHistoryItem[];
   }
 
-  const transactionApi = trpc.api.post.useMutation()
-  const tokenInfo = trpc.api.getPackTokenMetadata.useMutation()
+  const transactionApi = trpc.api.post.useMutation();
+  const tokenInfo = trpc.api.getPackTokenMetadata.useMutation();
   useEffect(() => {
     interface Pack {
       saleId: string;
@@ -101,37 +104,56 @@ const Open: NextPage<OpenProps> = ({ data }) => {
       amount: number;
     }
 
-    const getHistory = async (walletAddresses: string[], limit: number = 25, page: number = 0) => {
-      setPageLoading(true)
+    const getHistory = async (
+      walletAddresses: string[],
+      limit: number = 25,
+      page: number = 0
+    ) => {
+      setPageLoading(true);
       try {
         const body = {
-          "addresses": walletAddresses,
-          "sales": [process.env.BLITZ_SALE],
-          "offset": page * limit,
-          "limit": limit
-        }
+          addresses: walletAddresses,
+          sales: [process.env.BLITZ_SALE],
+          offset: page * limit,
+          limit: limit,
+        };
 
         // console.log(body)
         const res: HistoryResponse = await transactionApi.mutateAsync({
-          url: "/order/history", body
+          url: "/order/history",
+          body,
         });
 
         // console.log(res)
 
-        const uniqueTokenIds: string[] = [...new Set(res.items.filter((item: IPackTokenHistoryItem) => item.packToken !== undefined).map((item) => item.packToken))];
+        const uniqueTokenIds: string[] = [
+          ...new Set(
+            res.items
+              .filter(
+                (item: IPackTokenHistoryItem) => item.packToken !== undefined
+              )
+              .map((item) => item.packToken)
+          ),
+        ];
         // console.log(uniqueTokenIds)
-        const tokenData = await tokenInfo.mutateAsync({ tokenIds: uniqueTokenIds })
-        console.log(tokenData)
-        setNumberRows(res.total)
+        const tokenData = await tokenInfo.mutateAsync({
+          tokenIds: uniqueTokenIds,
+        });
+        console.log(tokenData);
+        setNumberRows(res.total);
 
-        const rarityKeywords = ['Common', 'Uncommon', 'Rare'];
-        type PackTypes = "common" | "uncommon" | "rare"
+        const rarityKeywords = ["Common", "Uncommon", "Rare"];
+        type PackTypes = "common" | "uncommon" | "rare";
 
         const transformedRows: PackRows[] = res.items
-          .filter(item => tokenData.some(token => token.tokenId === item.packToken)) // Keep only items with a matching token
+          .filter((item) =>
+            tokenData.some((token) => token.tokenId === item.packToken)
+          ) // Keep only items with a matching token
           .map((item) => {
-            const packName = tokenData.find((token) => token.tokenId === item.packToken)?.metadata.name || ''
-            let packType: PackTypes = 'common'
+            const packName =
+              tokenData.find((token) => token.tokenId === item.packToken)
+                ?.metadata.name || "";
+            let packType: PackTypes = "common";
 
             for (const rarity of rarityKeywords) {
               if (packName.includes(rarity)) {
@@ -143,21 +165,23 @@ const Open: NextPage<OpenProps> = ({ data }) => {
               id: item.id,
               date: item.created_at,
               packName,
-              image: tokenData.find((token) => token.tokenId === item.packToken)?.metadata.link || '',
+              image:
+                tokenData.find((token) => token.tokenId === item.packToken)
+                  ?.metadata.link || "",
               status: item.status as "FULLFILLED" | "CONFIRMING" | "REFUNDED",
               // action: item.status === "FULLFILLED",
               tokens: {
                 list: item.tokensBought,
-                packType: packType
-              }
-            }
+                packType: packType,
+              },
+            };
           });
         // console.log(transformedRows)
         setRows(transformedRows);
-        setPageLoading(false)
-        return res
+        setPageLoading(false);
+        return res;
       } catch (e: any) {
-        setPageLoading(false)
+        setPageLoading(false);
         console.log(e);
       }
     };
@@ -165,16 +189,20 @@ const Open: NextPage<OpenProps> = ({ data }) => {
     const getPacksAndExpand = async (walletAddresses: string[]) => {
       try {
         const body = {
-          "addresses": walletAddresses,
-          "sales": [process.env.BLITZ_SALE]
-        }
+          addresses: walletAddresses,
+          sales: [process.env.BLITZ_SALE],
+        };
         const res = await transactionApi.mutateAsync({
           url: `/sale/packtokens`,
-          body
+          body,
         });
 
         const packTokensDetails = await tokenInfo.mutateAsync({
-          tokenIds: res.filter((token: ApiResponse) => token.saleId === process.env.BLITZ_SALE).map((pack: Pack) => pack.packToken)
+          tokenIds: res
+            .filter(
+              (token: ApiResponse) => token.saleId === process.env.BLITZ_SALE
+            )
+            .map((pack: Pack) => pack.packToken),
         });
 
         // console.log(packTokensDetails)
@@ -182,9 +210,15 @@ const Open: NextPage<OpenProps> = ({ data }) => {
         // Expand the pack tokens based on their amount
         const expandedPackList = res.flatMap((pack: Pack) => {
           // Find the matching token details
-          const tokenDetails = packTokensDetails.find(detail => detail.tokenId === pack.packToken);
+          const tokenDetails = packTokensDetails.find(
+            (detail) => detail.tokenId === pack.packToken
+          );
           // Duplicate the details based on amount
-          if (tokenDetails) return Array.from({ length: pack.amount }, () => ({ ...tokenDetails, packId: pack.packId }))
+          if (tokenDetails)
+            return Array.from({ length: pack.amount }, () => ({
+              ...tokenDetails,
+              packId: pack.packId,
+            }));
           else return [];
         });
 
@@ -199,27 +233,35 @@ const Open: NextPage<OpenProps> = ({ data }) => {
 
     if (process.env.BLITZ_SALE && walletAddress) {
       if (dAppWallet.connected === true) {
-        getHistory(dAppWallet.addresses, paginationModel.pageSize, paginationModel.page)
-        getPacksAndExpand(dAppWallet.addresses)
-      }
-      else {
-        getHistory([walletAddress], paginationModel.pageSize, paginationModel.page)
-        getPacksAndExpand([walletAddress])
+        getHistory(
+          dAppWallet.addresses,
+          paginationModel.pageSize,
+          paginationModel.page
+        );
+        getPacksAndExpand(dAppWallet.addresses);
+      } else {
+        getHistory(
+          [walletAddress],
+          paginationModel.pageSize,
+          paginationModel.page
+        );
+        getPacksAndExpand([walletAddress]);
       }
     }
-  }, [dAppWallet, walletAddress, paginationModel.page, paginationModel.pageSize])
+  }, [
+    dAppWallet,
+    walletAddress,
+    paginationModel.page,
+    paginationModel.pageSize,
+  ]);
 
   const selectAll = () => {
-    setSelected(prev => (
-      prev.map(() => true)
-    ))
-  }
+    setSelected((prev) => prev.map(() => true));
+  };
 
   const selectNone = () => {
-    setSelected(prev => (
-      prev.map(() => false)
-    ))
-  }
+    setSelected((prev) => prev.map(() => false));
+  };
 
   // const getUserContents = trpc.api.getUsersWalletContents.useMutation()
   // const fetchData = async (addresses: string[]) => {
@@ -249,11 +291,14 @@ const Open: NextPage<OpenProps> = ({ data }) => {
 
   const rand = useMemo(() => randomInteger(1, 18), [1, 18]);
 
-  const handleViewCards = (cards: [string, number][], packType: "common" | "uncommon" | "rare") => {
-    setViewCardsOpen(true)
-    setSelectedPackType(packType)
-    setCardsViewed(cards)
-  }
+  const handleViewCards = (
+    cards: [string, number][],
+    packType: "common" | "uncommon" | "rare"
+  ) => {
+    setViewCardsOpen(true);
+    setSelectedPackType(packType);
+    setCardsViewed(cards);
+  };
 
   const columns: GridColDef[] = [
     // {
@@ -272,20 +317,28 @@ const Open: NextPage<OpenProps> = ({ data }) => {
       field: "image",
       headerName: "",
       renderCell: (params) => (
-        <Box sx={{
-          width: '36px',
-          height: '36px',
-          overflow: 'hidden',
-          display: 'inline-block',
-          position: 'relative',
-          mx: 'auto'
-        }}>
-          {params.value && <Image
-            src={resolveIpfs(params.value)}
-            layout="fill"
-            alt="nft-image"
-            style={{ objectFit: 'cover' }}
-          />}
+        <Box
+          sx={{
+            width: "36px",
+            height: "36px",
+            overflow: "hidden",
+            display: "inline-block",
+            position: "relative",
+            mx: "auto",
+          }}
+        >
+          {params.value && (
+            <img
+              src={resolveIpfs(params.value)}
+              alt="nft-image"
+              style={{
+                width: "100%",
+                height: "100%",
+                objectFit: "cover",
+                position: "absolute",
+              }}
+            />
+          )}
         </Box>
       ),
       width: 40,
@@ -293,11 +346,7 @@ const Open: NextPage<OpenProps> = ({ data }) => {
     {
       field: "packName",
       headerName: "Pack Name",
-      renderCell: (params) => (
-        <Box>
-          {params.value}
-        </Box>
-      ),
+      renderCell: (params) => <Box>{params.value}</Box>,
       flex: 1,
       minWidth: 170,
     },
@@ -323,10 +372,21 @@ const Open: NextPage<OpenProps> = ({ data }) => {
           <>
             <Alert
               icon={false}
-              sx={{ mb: 0, width: "100%", '&:before': { background: 'none', padding: 0 } }}
-              severity={params.value === 'FULLFILLED' || params.value === 'FULLFILLING' ? 'success' : params.value === 'REFUNDED' ? 'error' : 'warning'}
+              sx={{
+                mb: 0,
+                width: "100%",
+                "&:before": { background: "none", padding: 0 },
+              }}
+              severity={
+                params.value === "FULLFILLED" || params.value === "FULLFILLING"
+                  ? "success"
+                  : params.value === "REFUNDED"
+                  ? "error"
+                  : "warning"
+              }
             >
-              {params.value.charAt(0).toUpperCase() + params.value.slice(1).toLowerCase()}
+              {params.value.charAt(0).toUpperCase() +
+                params.value.slice(1).toLowerCase()}
             </Alert>
           </>
         );
@@ -342,14 +402,15 @@ const Open: NextPage<OpenProps> = ({ data }) => {
               <Button
                 disabled={!params.value}
                 variant="contained"
-                onClick={() => handleViewCards(params.value.list, params.value.packType)}
+                onClick={() =>
+                  handleViewCards(params.value.list, params.value.packType)
+                }
               >
                 View Cards
               </Button>
             </>
           );
-        }
-        else return <></>
+        } else return <></>;
       },
       width: 140,
     },
@@ -357,17 +418,22 @@ const Open: NextPage<OpenProps> = ({ data }) => {
 
   return (
     <>
-      <Box sx={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-        <Box sx={{ maxWidth: '800px' }}>
-          <Typography variant="h2">
-            Your Packs
-          </Typography>
+      <Box
+        sx={{
+          display: "flex",
+          flexDirection: "row",
+          justifyContent: "space-between",
+          alignItems: "flex-start",
+        }}
+      >
+        <Box sx={{ maxWidth: "800px" }}>
+          <Typography variant="h2">Your Packs</Typography>
         </Box>
         <Box
           sx={{
-            display: 'flex',
-            flexDirection: 'row',
-            justifyContent: 'flex-end',
+            display: "flex",
+            flexDirection: "row",
+            justifyContent: "flex-end",
             order: { sm: 3, xs: 2 },
           }}
         >
@@ -375,26 +441,35 @@ const Open: NextPage<OpenProps> = ({ data }) => {
         </Box>
       </Box>
       <Box sx={{ mb: 4 }}>
-        <Box sx={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
+        <Box
+          sx={{
+            display: "flex",
+            flexDirection: "row",
+            justifyContent: "space-between",
+            alignItems: "center",
+          }}
+        >
           <Box>
             <Typography variant="h4" sx={{ mb: 2 }}>
               Unopened Packs
             </Typography>
           </Box>
-          <Box sx={{
-            display: 'flex',
-            flexDirection: 'row',
-            gap: 1,
-            width: { xs: '100%', sm: 'auto' },
-            justifyContent: 'center',
-            alignItems: 'center',
-            flexWrap: 'wrap',
-            order: { sm: 2, xs: 3 },
-          }}>
+          <Box
+            sx={{
+              display: "flex",
+              flexDirection: "row",
+              gap: 1,
+              width: { xs: "100%", sm: "auto" },
+              justifyContent: "center",
+              alignItems: "center",
+              flexWrap: "wrap",
+              order: { sm: 2, xs: 3 },
+            }}
+          >
             <Button
               size="small"
               variant="text"
-              sx={{ mr: '6px' }}
+              sx={{ mr: "6px" }}
               onClick={() => selectAll()}
             >
               Select All
@@ -402,7 +477,7 @@ const Open: NextPage<OpenProps> = ({ data }) => {
             <Button
               size="small"
               variant="text"
-              sx={{ mr: '6px' }}
+              sx={{ mr: "6px" }}
               onClick={() => selectNone()}
             >
               Select None
@@ -410,55 +485,65 @@ const Open: NextPage<OpenProps> = ({ data }) => {
             <Button
               size="small"
               variant="text"
-              disabled={selected.filter(item => item === true).length < 1}
+              disabled={selected.filter((item) => item === true).length < 1}
               onClick={() => setConfirmationOpen(true)}
             >
               Open Selected
             </Button>
           </Box>
         </Box>
-        {!walletAddress
-          ? <Box sx={{ textAlign: 'center', py: 3 }}>
-            <Typography variant="body2" sx={{ mb: '12px' }}>
+        {!walletAddress ? (
+          <Box sx={{ textAlign: "center", py: 3 }}>
+            <Typography variant="body2" sx={{ mb: "12px" }}>
               You must connect a wallet to use this feature.
             </Typography>
-            <Button variant="contained" onClick={() => setAddWalletModalOpen(true)}>
+            <Button
+              variant="contained"
+              onClick={() => setAddWalletModalOpen(true)}
+            >
               Connect Now
             </Button>
           </Box>
-          : loading
-            ? <Box sx={{ textAlign: 'center', py: '10vh', width: '100%' }}>
-              <CircularProgress />
-            </Box>
-            : walletAddress !== '' && nftList && nftList.length > 0
-              ? <Grid
-                container
-                spacing={2}
-                columns={{ xs: 2, sm: 3, md: 4, lg: 5, xl: 6 }}
-              >
-                {nftList.map((item: IPackListItem, i: number) => {
-                  return (
-                    <Grid key={i} item xs={1}>
-                      <NftCardV2
-                        nftData={item}
-                        index={i}
-                        selected={selected}
-                        setSelected={setSelected}
-                      />
-                    </Grid>
-                  )
-                })}
-              </Grid>
-              : <Box sx={{ textAlign: 'center', py: 3 }}>
-                <Typography variant="h6" color="text.secondary">
-                  You don&apos;t have any unopened packs.
-                </Typography>
-              </Box>
-
-        }
+        ) : loading ? (
+          <Box sx={{ textAlign: "center", py: "10vh", width: "100%" }}>
+            <CircularProgress />
+          </Box>
+        ) : walletAddress !== "" && nftList && nftList.length > 0 ? (
+          <Grid
+            container
+            spacing={2}
+            columns={{ xs: 2, sm: 3, md: 4, lg: 5, xl: 6 }}
+          >
+            {nftList.map((item: IPackListItem, i: number) => {
+              return (
+                <Grid key={i} item xs={1}>
+                  <NftCardV2
+                    nftData={item}
+                    index={i}
+                    selected={selected}
+                    setSelected={setSelected}
+                  />
+                </Grid>
+              );
+            })}
+          </Grid>
+        ) : (
+          <Box sx={{ textAlign: "center", py: 3 }}>
+            <Typography variant="h6" color="text.secondary">
+              You don&apos;t have any unopened packs.
+            </Typography>
+          </Box>
+        )}
       </Box>
 
-      <Box sx={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
+      <Box
+        sx={{
+          display: "flex",
+          flexDirection: "row",
+          justifyContent: "space-between",
+          alignItems: "center",
+        }}
+      >
         <Box>
           <Typography variant="h4" sx={{ mb: 2 }}>
             Opened Packs
@@ -466,8 +551,8 @@ const Open: NextPage<OpenProps> = ({ data }) => {
         </Box>
       </Box>
       <Box>
-        {rows
-          ? <Paper sx={{ width: "100%" }}>
+        {rows ? (
+          <Paper sx={{ width: "100%" }}>
             <DataGrid
               rows={rows}
               columns={columns}
@@ -522,36 +607,51 @@ const Open: NextPage<OpenProps> = ({ data }) => {
               }}
             />
           </Paper>
-          : <Box sx={{ textAlign: 'center', py: 3 }}>
+        ) : (
+          <Box sx={{ textAlign: "center", py: 3 }}>
             <Typography variant="h4" color="text.secondary">
               You haven&apos;t opened any packs yet.
             </Typography>
           </Box>
-        }</Box>
-      <Box sx={{ textAlign: 'center', p: 2 }}>
-        <Typography>To self-validate card token rarity spreads, you can review the <a href="https://tinyurl.com/blitz-tcg-rarity-validation" target="_blank" rel="noreferrer" style={{ color: theme.palette.primary.main }}>pack opening test metrics</a>.</Typography>
+        )}
       </Box>
-      {nftList &&
+      <Box sx={{ textAlign: "center", p: 2 }}>
+        <Typography>
+          To self-validate card token rarity spreads, you can review the{" "}
+          <a
+            href="https://tinyurl.com/blitz-tcg-rarity-validation"
+            target="_blank"
+            rel="noreferrer"
+            style={{ color: theme.palette.primary.main }}
+          >
+            pack opening test metrics
+          </a>
+          .
+        </Typography>
+      </Box>
+      {nftList && (
         <OpenPacks
           open={confirmationOpen}
           setOpen={setConfirmationOpen}
           saleListData={data}
           setPackList={setNftList}
           setSelectedPacks={setSelected}
-          packs={nftList.filter((_item, i) => selected[i] === true).map((item) => {
-            const data = item.metadata
-            return (
-              {
+          packs={nftList
+            .filter((_item, i) => selected[i] === true)
+            .map((item) => {
+              const data = item.metadata;
+              return {
                 name: data.name,
                 collection: data.collection ? data.collection : undefined,
-                artist: '', // need to implement getArtist()
-                imgUrl: data.link ? resolveIpfs(data.link) : `/images/placeholder/${rand}.jpg`,
-                tokenId: item.tokenId
-              }
-            )
-          })}
+                artist: "", // need to implement getArtist()
+                imgUrl: data.link
+                  ? resolveIpfs(data.link)
+                  : `/images/placeholder/${rand}.jpg`,
+                tokenId: item.tokenId,
+              };
+            })}
         />
-      }
+      )}
       <ViewCardsDialog
         open={viewCardsOpen}
         setOpen={setViewCardsOpen}
@@ -559,7 +659,7 @@ const Open: NextPage<OpenProps> = ({ data }) => {
         packType={selectedPackType}
       />
     </>
-  )
-}
+  );
+};
 
-export default Open
+export default Open;
