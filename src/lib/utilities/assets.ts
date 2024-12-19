@@ -97,7 +97,7 @@ const reduceBalances = (balances: IBalances) => {
     ret.tokens = tokens;
     return ret;
   } catch (e) {
-    console.log(e);
+    console.error(e);
     return null;
   }
 };
@@ -136,7 +136,7 @@ const getIssuingBoxPromise = (id: string) => {
     return axios
       .get(`https://api.ergoplatform.com/api/v0/assets/${id}/issuingBox`)
       .catch((err) => {
-        console.log("ERROR FETCHING: ", err);
+        console.error("ERROR FETCHING: ", err);
       });
   }
   return JSON.parse(box);
@@ -183,7 +183,7 @@ export async function getWalletData(addresses: string[]): Promise<IAssetList> {
       addresses: addresses,
     })
     .catch((err) => {
-      console.log("ERROR FETCHING: ", err);
+      console.error("ERROR FETCHING: ", err);
       return {
         data: {
           assets: [],

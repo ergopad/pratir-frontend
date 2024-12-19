@@ -24,7 +24,7 @@ interface IOpenPacksProps {
     imgUrl: string;
     tokenId: string;
   }[];
-  saleListData: ISale[];
+  saleListData: SaleData;
   setPackList: React.Dispatch<
     React.SetStateAction<IPackListItem[] | undefined>
   >;
@@ -36,19 +36,17 @@ interface IToken {
   qty: number;
 }
 
-const findObjectByTokenId = (array: ISale[], tokenId: string) => {
-  for (let i = 0; i < array.length; i++) {
-    const obj = array[i];
-    for (let j = 0; j < obj.packs.length; j++) {
-      const pack = obj.packs[j];
-      for (let k = 0; k < pack.price.length; k++) {
-        const price = pack.price[k];
-        if (price.tokenId === tokenId) {
-          return {
-            saleId: obj.id,
-            packId: pack.id,
-          };
-        }
+const findObjectByTokenId = (sale: ISale, tokenId: string) => {
+  const obj = sale;
+  for (let j = 0; j < obj.packs.length; j++) {
+    const pack = obj.packs[j];
+    for (let k = 0; k < pack.price.length; k++) {
+      const price = pack.price[k];
+      if (price.tokenId === tokenId) {
+        return {
+          saleId: obj.id,
+          packId: pack.id,
+        };
       }
     }
   }
@@ -63,15 +61,17 @@ const OpenPacks: FC<IOpenPacksProps> = ({
   setPackList,
   setSelectedPacks,
 }) => {
-  const { walletAddress, dAppWallet } = useContext(WalletContext);
+  const { walletAddress, dAppWallet, chain } = useContext(WalletContext);
   const { addAlert } = useAlert();
+
   const [order, setOrder] = useState<IOrder | undefined>(undefined);
 
   const buildOrder = async (tokenIdArray: IToken[]): Promise<IOrder> => {
     const fetchSaleData = async (
       tokenIds: IToken[]
     ): Promise<IOrderRequests[]> => {
-      const saleList = saleListData;
+      const saleList =
+        chain === "ergo" ? saleListData.ergo : saleListData.cardano;
       const orderRequests: IOrderRequests[] = [];
       tokenIds.forEach((tokenIdObj) => {
         const tokenId = tokenIdObj.tokenId;

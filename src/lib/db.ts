@@ -1,4 +1,4 @@
-import { createClient } from 'redis';
+import { createClient } from "redis";
 
 const redisConfig = {
   password: process.env.REDIS_PW,
@@ -10,11 +10,10 @@ const redisConfig = {
 
 const redis = createClient(redisConfig);
 
-redis.on('error', (err) => console.error('Redis Client Error', err));
+redis.on("error", (err) => console.error("Redis Client Error", err));
 
 redis.connect().catch((err) => {
-  console.error('Error connecting to Redis', err);
+  console.error("Error connecting to Redis", err);
 });
 
 export { redis };
-

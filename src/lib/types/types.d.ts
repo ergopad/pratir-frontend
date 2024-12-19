@@ -100,17 +100,17 @@ interface IOrderRequests {
     packId: string;
     count: number;
     currencyTokenId: string;
-  }[]
+  }[];
 }
 
 interface IOrder {
   targetAddress: string;
   userWallet: string[];
-  txType: 'EIP-12';
-  requests: IOrderRequests[]
+  txType: "EIP-12";
+  requests: IOrderRequests[];
 }
 
-type TSubmitting = "submitting" | "ergopay" | "success" | "failed" | undefined
+type TSubmitting = "submitting" | "ergopay" | "success" | "failed" | undefined;
 
 interface INftItem {
   imgUrl?: string;
@@ -121,7 +121,7 @@ interface INftItem {
   price?: number;
   currency?: string;
   rarity?: string;
-  saleType?: 'mint' | 'auction' | 'sale';
+  saleType?: "mint" | "auction" | "sale";
   artist?: string;
   artistLink?: string;
   collection?: string;
@@ -192,4 +192,32 @@ interface ICardsViewed {
 interface IPackListItem {
   tokenId: string;
   metadata: IPackInfo;
+}
+
+interface JsonObject {
+  [key: string]: any;
+}
+
+type Chain = "ergo" | "cardano";
+
+interface IDAppWallet {
+  connected: boolean;
+  name: string;
+  addresses: string[];
+}
+
+type SaleData = {
+  ergo: ISale;
+  cardano: ISale;
+};
+
+interface Pack {
+  id: string;
+  name: string;
+  image: string;
+  price: IPrice[];
+  soldOut: boolean;
+  packType: "buy" | "buyAndOpen" | "open";
+  content?: IContent[];
+  derivedPrice: IDerivedPrice[];
 }

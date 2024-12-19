@@ -1,13 +1,13 @@
-import React, { FC, useState, useEffect } from 'react';
-import { ipfsUpload } from '@lib/utilities/nft-storage';
-import { IFileData, IFileUrl } from '@components/forms/FileUploadAreaIpfs'
+import React, { FC, useState, useEffect } from "react";
+import { ipfsUpload } from "@lib/utilities/nft-storage";
+import { IFileData, IFileUrl } from "@components/forms/FileUploadAreaIpfs";
 import {
   ListItem,
   ListItemAvatar,
   ListItemText,
   IconButton,
   Avatar,
-  LinearProgress
+  LinearProgress,
 } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
 import { bytesToSize, aspectRatioResize } from "@lib/utilities/general";
@@ -19,40 +19,46 @@ interface IFileProgressProps {
   setResponse: React.Dispatch<React.SetStateAction<IFileUrl[]>>;
 }
 
-const FileProgress: FC<IFileProgressProps> = ({ thisFileData, deleteFile, setResponse, setFileData }) => {
-  const [uploadFailed, setUploadFailed] = useState(false)
-  const [progress, setProgress] = useState(0)
+const FileProgress: FC<IFileProgressProps> = ({
+  thisFileData,
+  deleteFile,
+  setResponse,
+  setFileData,
+}) => {
+  const [uploadFailed, setUploadFailed] = useState(false);
+  const [progress, setProgress] = useState(0);
 
   const handleUpload = async () => {
-    setUploadFailed(false)
-    setProgress(0)
+    setUploadFailed(false);
+    setProgress(0);
     const result = await ipfsUpload(thisFileData, (progressEvent) => {
-      const percentCompleted = Math.round((progressEvent.loaded * 100) / progressEvent.total);
+      const percentCompleted = Math.round(
+        (progressEvent.loaded * 100) / progressEvent.total
+      );
       setProgress(percentCompleted);
     });
     if (result !== undefined) {
-      setResponse(prevArray => {
-        return [...prevArray, result]
-      })
-      setProgress(100)
-      setFileData(prevData => {
-        return prevData.map(file =>
+      setResponse((prevArray) => {
+        return [...prevArray, result];
+      });
+      setProgress(100);
+      setFileData((prevData) => {
+        return prevData.map((file) =>
           file.id === thisFileData.id
             ? { ...file, progress: 100, message: "uploaded" }
             : file
         );
       });
-    }
-    else {
-      setFileData(prevData => {
-        return prevData.map(file =>
+    } else {
+      setFileData((prevData) => {
+        return prevData.map((file) =>
           file.id === thisFileData.id
             ? { ...file, message: "upload failed", progress: 0 }
             : file
         );
       });
-      setProgress(0)
-      setUploadFailed(true)
+      setProgress(0);
+      setUploadFailed(true);
     }
   };
 
@@ -60,17 +66,17 @@ const FileProgress: FC<IFileProgressProps> = ({ thisFileData, deleteFile, setRes
     if (thisFileData.message.includes("uploading")) {
       const groupNumber = parseInt(thisFileData.message.split(" ")[1]);
       if (groupNumber === 1) {
-        console.log('first group')
+        // console.log('first group')
         handleUpload();
       } else {
-        const delay = (groupNumber) * 10000;
+        const delay = groupNumber * 10000;
         setTimeout(() => {
-          console.log('group ' + groupNumber)
+          // console.log('group ' + groupNumber)
           handleUpload();
         }, delay);
       }
     }
-  }, [thisFileData])
+  }, [thisFileData]);
 
   return (
     <>
@@ -99,7 +105,11 @@ const FileProgress: FC<IFileProgressProps> = ({ thisFileData, deleteFile, setRes
           }}
         />
       </ListItem>
-      <LinearProgress variant="determinate" value={progress} color={uploadFailed ? "error" : "primary"} />
+      <LinearProgress
+        variant="determinate"
+        value={progress}
+        color={uploadFailed ? "error" : "primary"}
+      />
     </>
   );
 };

@@ -105,7 +105,7 @@ const reduceBalances = (balances: IBalances) => {
     ret.tokens = tokens;
     return ret;
   } catch (e) {
-    console.log(e);
+    console.error(e);
     return null;
   }
 };
@@ -116,7 +116,7 @@ export const getAssetInfo = (id: string) => {
     return axios
       .get(`${process.env.ERGOPAD_API}/asset/info/${id}`)
       .catch((err) => {
-        console.log("ERROR FETCHING: ", err);
+        console.error("ERROR FETCHING: ", err);
       });
   }
   return JSON.parse(box);

@@ -106,7 +106,8 @@ export const AddWallet = () => {
       walletAddressList !== null &&
       dappConnected !== "" &&
       dappName !== "" &&
-      walletAddressList !== "" && walletAddressList !== "undefined"
+      walletAddressList !== "" &&
+      walletAddressList !== "undefined"
     ) {
       setDAppWallet({
         connected: dappConnected === "true" ? true : false,
@@ -130,7 +131,7 @@ export const AddWallet = () => {
           });
       }
     } catch (e) {
-      console.log(e);
+      console.error(e);
     }
     setInit(true);
   }, []); // eslint-disable-line
@@ -221,7 +222,7 @@ export const AddWallet = () => {
       setDAppError(true);
     } catch (e) {
       setDAppError(true);
-      console.log(e);
+      console.error(e);
     }
     setLoading(false);
   };
@@ -247,7 +248,7 @@ export const AddWallet = () => {
       });
       setDAppError(false);
     } catch (e) {
-      console.log(e);
+      console.error(e);
       // update dApp state
       setDAppWallet({
         connected: false,
@@ -309,7 +310,7 @@ export const AddWallet = () => {
       <Dialog
         open={addWalletModalOpen}
         onClose={handleClose}
-      // fullScreen={fullScreen}
+        // fullScreen={fullScreen}
       >
         <DialogTitle
           sx={{
@@ -321,9 +322,6 @@ export const AddWallet = () => {
           {walletAddress != "" ? "Wallet Connected" : "Connect Wallet"}
         </DialogTitle>
         <DialogContent sx={{ pb: 0 }}>
-          {/* <DialogContentText sx={{ textAlign: 'center', mb: '24px' }}>
-            Your wallet info will never be stored on our server.
-          </DialogContentText> */}
           {wallets.map((props, i) => {
             return (
               <Collapse
