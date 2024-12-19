@@ -15,9 +15,9 @@ import {
   ListItemText,
   IconButton,
   Avatar,
-  LinearProgress
+  LinearProgress,
 } from "@mui/material";
-import Image from 'next/legacy/image'
+import Image from "next/legacy/image";
 import { bytesToSize, aspectRatioResize } from "@lib/utilities/general";
 import DeleteIcon from "@mui/icons-material/Delete";
 import { storeNFT } from "@lib/utilities/nft-storage";
@@ -25,11 +25,11 @@ import axios from "axios";
 import { resolveIpfs } from "@lib/utilities/assets";
 import CircularProgress, {
   CircularProgressProps,
-} from '@mui/material/CircularProgress';
+} from "@mui/material/CircularProgress";
 import { ipfsUpload } from "@lib/utilities/nft-storage";
 import FileProgress from "./FileProgress";
 import { randomUUID } from "crypto";
-import { v4 as uuidv4 } from 'uuid';
+import { v4 as uuidv4 } from "uuid";
 
 export interface IFileData {
   currentFile: File;
@@ -44,7 +44,7 @@ const fileInitObject: IFileData = {
   previewImage: "",
   progress: 0,
   message: "",
-  id: uuidv4()
+  id: uuidv4(),
 };
 
 const fileInit = [fileInitObject];
@@ -94,12 +94,12 @@ const FileUploadAreaIpfs: FC<IFileUploadAreaProps> = ({
   const theme = useTheme();
   const [aspect, setAspect] = useState({});
   const [fileData, setFileData] = useState(fileInit);
-  const [progress, setProgress] = useState<any[]>([])
-  const [upload, setUpload] = useState(false)
+  const [progress, setProgress] = useState<any[]>([]);
+  const [upload, setUpload] = useState(false);
 
   useEffect(() => {
-    if (fileUrls.length === fileData.length) setUpload(false)
-  }, [fileUrls.toString()])
+    if (fileUrls.length === fileData.length) setUpload(false);
+  }, [fileUrls.toString()]);
 
   useEffect(() => {
     if (expectedImgHeight && expectedImgWidth) {
@@ -175,7 +175,7 @@ const FileUploadAreaIpfs: FC<IFileUploadAreaProps> = ({
               previewImage: URL.createObjectURL(file),
               progress: 0,
               message: "",
-              id: uuidv4()
+              id: uuidv4(),
             },
           ]);
           if (
@@ -193,7 +193,12 @@ const FileUploadAreaIpfs: FC<IFileUploadAreaProps> = ({
           }
         } else {
           if (!checkExists(file.name)) {
-            setProgress([...fileData.map(() => { return 0 }), 0])
+            setProgress([
+              ...fileData.map(() => {
+                return 0;
+              }),
+              0,
+            ]);
             setFileData((files) => [
               ...files,
               {
@@ -201,7 +206,7 @@ const FileUploadAreaIpfs: FC<IFileUploadAreaProps> = ({
                 previewImage: URL.createObjectURL(file),
                 progress: 0,
                 message: "",
-                id: uuidv4()
+                id: uuidv4(),
               },
             ]);
           }
@@ -213,18 +218,19 @@ const FileUploadAreaIpfs: FC<IFileUploadAreaProps> = ({
   };
 
   const deleteFile = (fileNumber: number) => {
-    if (fileData.length > 1) setFileData(fileData.filter((data, idx) => idx !== fileNumber));
+    if (fileData.length > 1)
+      setFileData(fileData.filter((data, idx) => idx !== fileNumber));
     else setFileData([fileInitObject]);
   };
 
   const deleteFileById = (fileId: string) => {
-    setFileData(prevFileData => {
+    setFileData((prevFileData) => {
       if (prevFileData.length > 1) {
-        return prevFileData.filter(data => data.id !== fileId);
+        return prevFileData.filter((data) => data.id !== fileId);
       } else {
         return [fileInitObject];
       }
-    })
+    });
   };
 
   const randomNumber = () => {
@@ -265,7 +271,7 @@ const FileUploadAreaIpfs: FC<IFileUploadAreaProps> = ({
       });
       if (setFileUrls) setFileUrls(newArray);
     } catch (e) {
-      console.log(e);
+      console.error(e);
     }
     setIsLoading(false);
   };
@@ -281,18 +287,15 @@ const FileUploadAreaIpfs: FC<IFileUploadAreaProps> = ({
     if (!multiple) ipfsUpload();
     else {
       setFileData((prevData) => {
-        let count = 1
+        let count = 1;
         return prevData.map((file) => {
-          if (file.message !== 'uploaded') {
+          if (file.message !== "uploaded") {
             const message = `uploading ${Math.ceil(count / 20)}`;
-            count++
-            return { ...file, message: message }
-          }
-          else return file
-        }
-        )
-      }
-      );
+            count++;
+            return { ...file, message: message };
+          } else return file;
+        });
+      });
     }
   };
 
@@ -309,8 +312,8 @@ const FileUploadAreaIpfs: FC<IFileUploadAreaProps> = ({
         sx
           ? sx
           : {
-            height: "100%",
-          }
+              height: "100%",
+            }
       }
     >
       <Box
@@ -338,13 +341,11 @@ const FileUploadAreaIpfs: FC<IFileUploadAreaProps> = ({
             <Grid item xs>
               <Typography>{title}</Typography>
             </Grid>
-            {multiple &&
+            {multiple && (
               <Grid item xs="auto">
-                <Typography>
-                  {fileData.length} files.
-                </Typography>
+                <Typography>{fileData.length} files.</Typography>
               </Grid>
-            }
+            )}
             <Grid item xs="auto">
               {isLoading && <CircularProgress />}
               <Button
@@ -376,7 +377,7 @@ const FileUploadAreaIpfs: FC<IFileUploadAreaProps> = ({
           // onDragOver={e => handleDragOver(e)}
           onDragEnter={(e) => handleDragEnter(e)}
           onDragLeave={(e) => handleDragLeave(e)}
-        // onDrop={e => handleDrop(e)}
+          // onDrop={e => handleDrop(e)}
         >
           <Input
             ref={inputFileRef}
@@ -460,7 +461,7 @@ const FileUploadAreaIpfs: FC<IFileUploadAreaProps> = ({
                   }}
                 >
                   {fileData?.[0]?.previewImage != "" &&
-                    fileData?.[0]?.currentFile?.name != undefined ? (
+                  fileData?.[0]?.currentFile?.name != undefined ? (
                     <>
                       {type === "avatar" ? (
                         <Box sx={{ mx: "auto" }}>
@@ -586,13 +587,20 @@ const FileUploadAreaIpfs: FC<IFileUploadAreaProps> = ({
           <Box sx={{ mt: 1 }}>
             Current Image:
             {fileUrls.map((item, i) => {
-              const url = resolveIpfs(item.ipfs)
+              const url = resolveIpfs(item.ipfs);
               return (
-                <Box sx={{ flexDirection: 'row', display: 'flex', alignItems: 'center' }} key={i}>
+                <Box
+                  sx={{
+                    flexDirection: "row",
+                    display: "flex",
+                    alignItems: "center",
+                  }}
+                  key={i}
+                >
                   <Avatar src={url} variant="rounded" sx={{ mr: 1 }} />
                   <Typography sx={{ flex: 1 }}>{item.ipfs}</Typography>
                 </Box>
-              )
+              );
             })}
           </Box>
         )}

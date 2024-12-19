@@ -17,7 +17,7 @@ import {
   Avatar,
   CircularProgress,
 } from "@mui/material";
-import Image from 'next/legacy/image'
+import Image from "next/legacy/image";
 import { bytesToSize, aspectRatioResize } from "@lib/utilities/general";
 import DeleteIcon from "@mui/icons-material/Delete";
 import axios from "axios";
@@ -217,7 +217,7 @@ const FileUploadArea: FC<IFileUploadAreaProps> = ({
       });
       if (setFileUrls) setFileUrls(newArray);
     } catch (e) {
-      console.log(e);
+      console.error(e);
     }
     setIsLoading(false);
   };
@@ -244,8 +244,8 @@ const FileUploadArea: FC<IFileUploadAreaProps> = ({
         sx
           ? sx
           : {
-            height: "100%",
-          }
+              height: "100%",
+            }
       }
     >
       <Box
@@ -306,7 +306,7 @@ const FileUploadArea: FC<IFileUploadAreaProps> = ({
           // onDragOver={e => handleDragOver(e)}
           onDragEnter={(e) => handleDragEnter(e)}
           onDragLeave={(e) => handleDragLeave(e)}
-        // onDrop={e => handleDrop(e)}
+          // onDrop={e => handleDrop(e)}
         >
           <Input
             ref={inputFileRef}
@@ -390,7 +390,7 @@ const FileUploadArea: FC<IFileUploadAreaProps> = ({
                   }}
                 >
                   {fileData?.[0]?.previewImage != "" &&
-                    fileData?.[0]?.currentFile?.name != undefined ? (
+                  fileData?.[0]?.currentFile?.name != undefined ? (
                     <>
                       {type === "avatar" ? (
                         <Box sx={{ mx: "auto" }}>
@@ -535,32 +535,49 @@ const FileUploadArea: FC<IFileUploadAreaProps> = ({
             Current Image&#40;s&#41;:
             {fileUrls.map((item, i) => {
               if (item.url) {
-                const lastPeriodIndex = item.url.lastIndexOf(".")
-                const secondLastPeriodIndex = item.url.lastIndexOf(".", lastPeriodIndex - 1);
-                const extractedString = item.url.substring(secondLastPeriodIndex + 1);
+                const lastPeriodIndex = item.url.lastIndexOf(".");
+                const secondLastPeriodIndex = item.url.lastIndexOf(
+                  ".",
+                  lastPeriodIndex - 1
+                );
+                const extractedString = item.url.substring(
+                  secondLastPeriodIndex + 1
+                );
                 return (
-                  <Box sx={{ flexDirection: 'row', display: 'flex', alignItems: 'center' }} key={i}>
+                  <Box
+                    sx={{
+                      flexDirection: "row",
+                      display: "flex",
+                      alignItems: "center",
+                    }}
+                    key={i}
+                  >
                     <Avatar src={item.url} variant="rounded" sx={{ mr: 1 }} />
                     <Typography sx={{ flex: 1 }}>{extractedString}</Typography>
                   </Box>
-                )
+                );
               }
               if (item.ipfs) {
-                const url = resolveIpfs(item.ipfs)
+                const url = resolveIpfs(item.ipfs);
                 return (
-                  <Box sx={{ flexDirection: 'row', display: 'flex', alignItems: 'center' }} key={i}>
+                  <Box
+                    sx={{
+                      flexDirection: "row",
+                      display: "flex",
+                      alignItems: "center",
+                    }}
+                    key={i}
+                  >
                     <Avatar src={url} variant="rounded" sx={{ mr: 1 }} />
                     <Typography sx={{ flex: 1 }}>{url}</Typography>
                   </Box>
-                )
+                );
               }
-              return null
+              return null;
             })}
           </Box>
         )}
       </Box>
-
-
     </Box>
   );
 };

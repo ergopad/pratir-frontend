@@ -1,12 +1,8 @@
 import React, { createContext } from "react";
 
-interface IDAppWallet {
-  connected: boolean;
-  name: string;
-  addresses: string[];
-}
-
 export interface IWalletContext {
+  chain: Chain;
+  setChain: React.Dispatch<React.SetStateAction<Chain>>;
   walletAddress: string;
   setWalletAddress: React.Dispatch<React.SetStateAction<string>>;
   dAppWallet: IDAppWallet;

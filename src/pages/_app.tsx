@@ -8,10 +8,12 @@ import Head from "next/head";
 import { WalletContext } from "@contexts/WalletContext";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
-import { trpc } from "@server/utils/trpc"
+import { trpc } from "@server/utils/trpc";
 import { AlertProvider } from "@contexts/AlertContext";
 import AlertComponent from "@components/AlertComponent";
-import { Container, GlobalStyles } from "@mui/material";
+import { Container } from "@mui/material";
+import "@meshsdk/react/styles.css";
+import { MeshProvider } from "@meshsdk/react";
 
 function MyApp({ Component, pageProps }: AppProps) {
   const [walletAddress, setWalletAddress] = useState("");
@@ -22,7 +24,7 @@ function MyApp({ Component, pageProps }: AppProps) {
   });
   const [expanded, setExpanded] = useState<string | false>(false);
   const [addWalletModalOpen, setAddWalletModalOpen] = useState(false);
-
+  const [chain, setChain] = useState<Chain>("cardano");
   // const debounce = (func: () => void, delay: number) => {
   //   let timer: number;
   //   return () => {
@@ -64,7 +66,6 @@ function MyApp({ Component, pageProps }: AppProps) {
   //   };
   // }, []);
 
-
   return (
     <>
       <Head>
@@ -80,6 +81,8 @@ function MyApp({ Component, pageProps }: AppProps) {
         <ThemeProvider theme={theme}>
           <WalletContext.Provider
             value={{
+              chain,
+              setChain,
               walletAddress,
               setWalletAddress,
               dAppWallet,
@@ -90,13 +93,15 @@ function MyApp({ Component, pageProps }: AppProps) {
               setExpanded,
             }}
           >
-            <AlertProvider>
-              <CssBaseline enableColorScheme />
-              <Container sx={{ pb: '60px', pt: '132px' }}>
-                <Component {...pageProps} />
-                <AlertComponent />
-              </Container>
-            </AlertProvider>
+            <MeshProvider>
+              <AlertProvider>
+                <CssBaseline enableColorScheme />
+                <Container sx={{ pb: "60px", pt: "132px" }}>
+                  <Component {...pageProps} />
+                  <AlertComponent />
+                </Container>
+              </AlertProvider>
+            </MeshProvider>
           </WalletContext.Provider>
         </ThemeProvider>
       </LocalizationProvider>
